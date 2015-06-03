@@ -14,7 +14,7 @@ using Microsoft.PowerShell.Commands;
 using Microsoft.PowerShell.Commands.Management;
 using PowerShell = System.Management.Automation.PowerShell;
 
-namespace RxPlayground
+namespace PoshManagerCli
 {
     class Program
     {
@@ -37,10 +37,10 @@ namespace RxPlayground
                 "Select-Object"
             });
 
-            MigrateVariables(cleanIss, defaultIss);
+            //MigrateVariables(cleanIss, defaultIss);
             MigrateProviders(cleanIss, defaultIss);
-            MigrateAssemblies(cleanIss, defaultIss);
-            MigrateFormats(cleanIss, defaultIss);
+            //MigrateAssemblies(cleanIss, defaultIss);
+            //MigrateFormats(cleanIss, defaultIss);
 
             // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
 

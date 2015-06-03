@@ -8,7 +8,7 @@ using System.Management;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
 
-namespace RxPlayground
+namespace PoshManagerCli
 {
     public class NetModule : BasePoshModule
     {
@@ -29,8 +29,6 @@ namespace RxPlayground
                 Environment.CurrentDirectory,
                 "scripts\\GetNicInfo.ps1"
             });
-            
-            // powerShell.AddScript(String.Format("\"{0}\"", path));
             DotInclude("scripts\\GetNicInfo.ps1");
         }
 

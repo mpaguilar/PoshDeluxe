@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.Management.Automation;
 
-namespace RxPlayground
+namespace PoshManagerCli
 {
     public class BasePoshModule
     {

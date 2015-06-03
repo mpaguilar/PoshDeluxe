@@ -7,7 +7,7 @@
     <ProjectGuid>{984DB061-BA97-4689-9585-26AF2ADF0483}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RxPlayground</RootNamespace>
+    <RootNamespace>PoshManagerCli</RootNamespace>
     <AssemblyName>RxPlayground</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
