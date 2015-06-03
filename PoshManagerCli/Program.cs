@@ -52,7 +52,6 @@ namespace PoshManagerCli
                     OldSkool(posh);
                 }
             }
-
         }
 
         static void MigrateAssemblies( InitialSessionState clean,
