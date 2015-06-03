@@ -37,6 +37,7 @@ namespace RxPlayground
             });
 
             MigrateVariables(cleanIss, defaultIss);
+            MigrateProviders(cleanIss, defaultIss);
 
             // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
 
@@ -44,7 +45,7 @@ namespace RxPlayground
             {
                 rs.Open();
                 using( PowerShell posh = PowerShell.Create() ) {
-                    // posh.Runspace = rs;
+                    posh.Runspace = rs;
                     OldSkool(posh);
                 }
             }
