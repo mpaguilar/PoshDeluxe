@@ -27,6 +27,7 @@ namespace RxPlayground
             cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
 
             MigrateCommands(cleanIss, defaultIss, new[] {
+                "*", // this gets two functions - one of them does dot-sourcing
                 "Get-WmiObject",
                 "Write-Verbose",
                 "Write-Debug",
@@ -38,10 +39,12 @@ namespace RxPlayground
 
             MigrateVariables(cleanIss, defaultIss);
             MigrateProviders(cleanIss, defaultIss);
+            MigrateAssemblies(cleanIss, defaultIss);
+            MigrateFormats(cleanIss, defaultIss);
 
             // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
 
-            using (Runspace rs = RunspaceFactory.CreateRunspace(defaultIss))
+            using (Runspace rs = RunspaceFactory.CreateRunspace(cleanIss))
             {
                 rs.Open();
                 using( PowerShell posh = PowerShell.Create() ) {
@@ -52,6 +55,24 @@ namespace RxPlayground
 
         }
 
+        static void MigrateAssemblies( InitialSessionState clean,
+            InitialSessionState source) {
+
+                foreach (var a in source.Assemblies)
+                {
+                    clean.Assemblies.Add(a);
+                }
+        }
+
+        static void MigrateFormats(InitialSessionState clean,
+            InitialSessionState source) {
+
+            foreach( var f in source.Formats )
+            {
+                clean.Formats.Add(f);
+            }
+        
+        }
         static void MigrateProviders( InitialSessionState clean,
             InitialSessionState source)
         {
@@ -74,6 +95,7 @@ namespace RxPlayground
             InitialSessionState source, 
             String[] commands)
         {
+            
             foreach (var cmd in commands)
             {
                 var check_cmd = clean.Commands.Where(c => c.Name == cmd);
@@ -83,9 +105,12 @@ namespace RxPlayground
                     Console.WriteLine(msg);
                 }
 
-                var scmd = source.Commands.Where(c => c.Name == cmd).First();
-                var scmdCopy = (SessionStateCommandEntry)scmd.Clone();
-                clean.Commands.Add(scmdCopy);
+                var scmds = source.Commands.Where(c => c.Name == cmd);
+                foreach (var scmd in scmds)
+                {
+                    var scmdCopy = (SessionStateCommandEntry)scmd.Clone();
+                    clean.Commands.Add(scmdCopy);
+                }
             }
         }
 
