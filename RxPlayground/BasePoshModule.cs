@@ -13,7 +13,7 @@ namespace RxPlayground
         public readonly PowerShell Posh;
         public void DotInclude(String script)
         {
-            Posh.AddStatement()
+            Posh
                 .AddScript(String.Format(". \"{0}\"", script));
         }
 

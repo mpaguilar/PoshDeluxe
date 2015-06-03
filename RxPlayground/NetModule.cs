@@ -25,7 +25,13 @@ namespace RxPlayground
             : base( powerShell )
         {
             ComputerName = computerName;
-            DotInclude(@"scripts\GetNicInfo.ps1");
+            var path = System.IO.Path.Combine(new [] {
+                Environment.CurrentDirectory,
+                "scripts\\GetNicInfo.ps1"
+            });
+            
+            // powerShell.AddScript(String.Format("\"{0}\"", path));
+            DotInclude("scripts\\GetNicInfo.ps1");
         }
 
         public Task Refresh()
@@ -43,7 +49,6 @@ namespace RxPlayground
                 .AddArgument(ComputerName);
 
             _nics = Posh.Invoke<ManagementObject>();
-            Posh.Streams.ClearStreams();
         }
 
         public void RefreshRoutes()

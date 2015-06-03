@@ -18,12 +18,13 @@ namespace RxPlayground
 {
     class Program
     {
-
-        
         static void Main(string[] args)
         {
+
             InitialSessionState defaultIss = InitialSessionState.CreateDefault();
             InitialSessionState cleanIss = InitialSessionState.Create();
+
+            cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
 
             MigrateCommands(cleanIss, defaultIss, new[] {
                 "Get-WmiObject",
@@ -35,17 +36,37 @@ namespace RxPlayground
                 "Select-Object"
             });
 
+            MigrateVariables(cleanIss, defaultIss);
+
             // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
 
-            Runspace rs = RunspaceFactory.CreateRunspace(cleanIss);
-            rs.Open();
+            using (Runspace rs = RunspaceFactory.CreateRunspace(defaultIss))
+            {
+                rs.Open();
+                using( PowerShell posh = PowerShell.Create() ) {
+                    // posh.Runspace = rs;
+                    OldSkool(posh);
+                }
+            }
 
+        }
 
-            rs.Close();
-            rs.Dispose();
+        static void MigrateProviders( InitialSessionState clean,
+            InitialSessionState source)
+        {
+            foreach (var p in source.Providers)
+            {
+                clean.Providers.Add(p);
+            }
+        }
 
-            // OldSkool();
-            
+        static void MigrateVariables(InitialSessionState clean,
+            InitialSessionState source)
+        {
+            foreach (var svar in source.Variables)
+            {
+                clean.Variables.Add(svar);
+            }
         }
 
         static void MigrateCommands(InitialSessionState clean, 
@@ -69,32 +90,48 @@ namespace RxPlayground
 
         
 
-        async static void OldSkool()
+        async static void OldSkool(PowerShell powerShell )
         {
-            using (var powerShell = PowerShell.Create())
+
+            var netModule = new NetModule(
+                powerShell,
+                "vwin8"
+                );
+
+            var netWait = netModule.Refresh();
+            
+
+            Task.WaitAll(new[] {
+                netWait
+            });
+
+            // System.Threading.Thread.Sleep(1000);
+            if (powerShell.HadErrors)
             {
-                
-
-                var netModule = new NetModule(
-                    powerShell,
-                    "vwin8"
-                   );
-
-                var netWait = netModule.Refresh();
-                
-
-                Task.WaitAll(new[] {
-                    netWait
+                ConsoleColor prev = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                var errors = powerShell.Streams.Error.Select((m) => {
+                    if (null != m.Exception)
+                        return m.Exception.Message;
+                    else
+                        return "none";
                 });
-
-                // System.Threading.Thread.Sleep(1000);
-
-                var foo = netModule.NetworkAdapters.Select(mo => mo.Properties["Caption"].Value);
-                foreach (var f in foo)
+                foreach (var msg in errors)
                 {
-                    Console.WriteLine(f);
+                    Console.WriteLine("ERROR: {0}", msg);
+                    Console.WriteLine();
                 }
+                Console.ForegroundColor = prev;
+                Console.WriteLine();
+                return;
             }
+
+            var foo = netModule.NetworkAdapters.Select(mo => mo.Properties["Caption"].Value);
+            foreach (var f in foo)
+            {
+                Console.WriteLine(f);
+            }
+            
         }
 
         static void DisplayMessages(NetModule net)
