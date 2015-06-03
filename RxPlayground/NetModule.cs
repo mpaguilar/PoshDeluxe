@@ -4,86 +4,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using System.Reactive.Linq;
-
 using System.Management;
 using System.Management.Automation;
-
+using System.Collections.ObjectModel;
 
 namespace RxPlayground
 {
-    public class NetModule
+    public class NetModule : BasePoshModule
     {
-        public readonly PowerShell Posh;
 
         private IEnumerable<ManagementObject> _nics = null;
-        public IObservable<ManagementObject> NetworkAdapters
+        private IEnumerable<String> _routes = null;
+        public IEnumerable<ManagementObject> NetworkAdapters
         {
-            get { return _nics.ToObservable<ManagementObject>(); }
+            get { return _nics; }
         }
-        public IEnumerable<ManagementObject> RawNics
-        {
-            get {
-                if (_nics == null)
-                {
-                    GetNetworkAdapters();
-                }
-                return _nics;  
-            }
-        }
+        public readonly String ComputerName;
 
-        public NetModule()
+        public NetModule(PowerShell powerShell, String computerName)
+            : base( powerShell )
         {
-            Posh = PowerShell.Create();
+            ComputerName = computerName;
             DotInclude(@"scripts\GetNicInfo.ps1");
-            
         }
 
-        public void DotInclude( String script)
+        public Task Refresh()
         {
-            Posh.AddStatement()
-                .AddScript(String.Format(". \"{0}\"", script));
-
+            return Task.Run(() => {
+                RefreshNetworkAdapters();
+                // RefreshRoutes();
+            });
         }
 
-        public IEnumerable<String> RunScript(String script)
-        {
-            Posh.AddScript(script);
-            var res = Posh.Invoke();
-
-            Posh.Commands.Clear();
-            return res.Select( r => r.ToString());
-        }
-
-        public void ClearMessages()
-        {
-            Posh.Streams.Error.Clear();
-            Posh.Streams.Warning.Clear();
-        }
-
-        public void GetNetworkAdapters()
+        public void RefreshNetworkAdapters()
         {
             Posh.AddStatement()
                 .AddCommand("Get-NetworkAdapter", true)
-                .AddArgument("vwin8");
+                .AddArgument(ComputerName);
 
-            var r = Posh.Invoke<ManagementObject>();
-            _nics = r;
+            _nics = Posh.Invoke<ManagementObject>();
+            Posh.Streams.ClearStreams();
         }
 
-        public IObservable<String> Verbose()
+        public void RefreshRoutes()
         {
-            return Posh.Streams.Verbose.Select(msg => msg.Message).ToObservable();
+            Posh.AddStatement()
+                .AddCommand("Get-PersistentRoutes", true)
+                .AddArgument(ComputerName);
+
+            _routes = Posh.Invoke<String>();
         }
 
-        public IEnumerable<String> Warnings()
-        {
-            return Posh.Streams.Warning.Select(warn => warn.Message);
-        }
-
-        public IEnumerable<String> Errors()
-        {
-            return Posh.Streams.Error.Select(err => err.ErrorDetails.Message);
-        }
     }
 }
