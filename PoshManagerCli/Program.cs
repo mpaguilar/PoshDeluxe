@@ -50,7 +50,7 @@ namespace PoshManagerCli
 
             DisplayErrors(powerShell);
 
-            var foo = netModule.NetworkAdapters.Select(mo => mo.Properties["Caption"].Value);
+            var foo = netModule.NetworkAdapters;
             foreach (var f in foo)
             {
                 Console.WriteLine(f);

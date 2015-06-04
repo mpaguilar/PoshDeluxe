@@ -13,9 +13,9 @@ namespace PoshManagerCli
     public class NetModule : BasePoshModule
     {
 
-        private IEnumerable<ManagementObject> _nics = null;
+        private IEnumerable<String> _nics = null;
         private IEnumerable<String> _routes = null;
-        public IEnumerable<ManagementObject> NetworkAdapters
+        public IEnumerable<String> NetworkAdapters
         {
             get { return _nics; }
         }
@@ -33,16 +33,40 @@ namespace PoshManagerCli
         private void init()
         {
             Posh.Commands.Clear();
-            DotInclude("scripts\\GetNicInfo.ps1");
+            // DotInclude("scripts\\GetNicInfo.ps1");
         }
 
         public Task Refresh()
-        {
-            return Task.Run(() => {
-                RefreshNetworkAdapters();
-                RefreshRoutes();                
+        { 
+            return Task.Run(() =>
+            {
+                Posh.Commands.Clear();
+
+                Posh.AddScript(
+                    String.Format("scripts\\GetNicInfo.ps1 -ComputerName {0}", ComputerName));
+
+                var ret = Posh.Invoke<String>();
+
+                _nics = GetPoshVariable("NetworkAdapters");
+                _routes = GetPoshVariable("PersistentRoutes");
+
+                Console.WriteLine("meh");
+                
             });
         }
+
+        private IEnumerable<String> GetPoshVariable(String variableName)
+        {
+            var foo = Posh.Runspace.SessionStateProxy.GetVariable(variableName) as object[]; 
+            if (null != foo)
+                return new List<String>(foo.Select(o => o.ToString()));
+            else
+                return new String[0];
+        }
+
+        /// <summary>
+        /// ///////////
+        /// </summary>
 
         public void RefreshNetworkAdapters()
         {
@@ -51,7 +75,11 @@ namespace PoshManagerCli
                 .AddCommand("Get-NetworkAdapter", true)
                 .AddArgument(ComputerName);
 
-            _nics = Posh.Invoke<ManagementObject>();
+
+            var meh = Posh.Invoke<ManagementObject>();
+            
+            
+            Console.WriteLine("meh");
         }
 
         public void RefreshRoutes()
@@ -62,7 +90,7 @@ namespace PoshManagerCli
                 .AddArgument(ComputerName);
 
             var rt = Posh.Invoke<String>();
-            _routes = rt;
+            // _routes = rt;
         }
 
     }

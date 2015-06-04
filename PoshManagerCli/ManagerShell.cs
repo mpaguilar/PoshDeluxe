@@ -61,17 +61,12 @@ namespace PoshManagerCli
             });
 
             //MigrateVariables(cleanIss, defaultIss);
-
-
-            foreach ( var p in defaultIss.Providers )
-            {
-                Console.WriteLine(p.Name);
-            }
+            cleanIss.Variables.Add(new SessionStateVariableEntry("VerbosePreference", "Continue", ""));
 
             MigrateProviders(cleanIss, defaultIss, new String[] {
                 "Function",
-//                "Variable",
-//                "Environment",
+                "Variable",
+                "Environment",
 //                "Alias",
 //                "WSMan",
 //                "Certificate",
@@ -82,7 +77,7 @@ namespace PoshManagerCli
             //MigrateAssemblies(cleanIss, defaultIss);
             //MigrateFormats(cleanIss, defaultIss);
 
-            // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
+
 
             return cleanIss;
 

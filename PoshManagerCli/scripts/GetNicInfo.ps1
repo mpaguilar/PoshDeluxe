@@ -1,39 +1,50 @@
-﻿function Get-NetworkAdapter
-{
-    Param (
-        [Parameter(mandatory=$true)]
-        [String]
-        $ComputerName
-    )
+﻿
+Param (
+	[Parameter(mandatory=$true)]
+	$ComputerName,
 
-    Process {
-        write-verbose "Getting network adapters from $ComputerName"
+	$Credentials
+)
 
-        $nic = Get-WmiObject -ComputerName $ComputerName -Class Win32_NetworkAdapter
+Process {
+	function Get-NetworkAdapter
+	{
+		Param (
+			[Parameter(mandatory=$true)]
+			[String]
+			$ComputerName
+		)
 
-        if( $null -ne $nic ) {
-            $nic
-        }
-    }
+		Process {
+			write-verbose "Getting network adapters from $ComputerName"
+
+			[String[]]$nic = Get-WmiObject -ComputerName $ComputerName -Class Win32_NetworkAdapter |
+				select-Object -ExpandProperty Caption
+
+			$nic
+		}
+	}
+
+	function Get-PersistentRoutes
+	{
+		Param (
+			[Parameter(mandatory=$true)]
+			[String]
+			$ComputerName
+		)
+
+		Process {
+			[String[]]$routes = Invoke-Command -ComputerName $ComputerName -ScriptBlock {
+				Get-Item "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\PersistentRoutes" | 
+					select-object -ExpandProperty Property
+			}
+
+			$routes
+		}
+	}
+
+
+	$Global:NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
+	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
 }
-
-function Get-PersistentRoutes
-{
-    Param (
-        [Parameter(mandatory=$true)]
-        [String]
-        $ComputerName
-    )
-
-    Process {
-        $routes = Invoke-Command -ComputerName $ComputerName -ScriptBlock {
-            Get-Item "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\PersistentRoutes" | 
-				select -ExpandProperty Property
-        }
-
-        $routes
-    }
-}
-$VerbosePreference = "Continue"
-# Get-PersistentRoutes -ComputerName "vwin8"
 
