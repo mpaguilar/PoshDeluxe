@@ -46,7 +46,9 @@ namespace PoshManagerCli
                 Posh.AddScript(
                     String.Format("scripts\\GetNicInfo.ps1 -ComputerName {0}", ComputerName));
 
-                var ret = Posh.Invoke<String>();
+                var ret = Posh.Invoke();
+
+                ExtractResults(ret);
 
                 _nics = GetPoshVariable("NetworkAdapters");
                 _routes = GetPoshVariable("PersistentRoutes");
@@ -58,6 +60,16 @@ namespace PoshManagerCli
             t.ContinueWith((task) => Console.WriteLine("Finished"));
 
             return t;
+        }
+
+        private IEnumerable<String> ExtractResults(Collection<PSObject> resultObjects )
+        {
+            foreach (var o in resultObjects)
+            {
+                var meh = o.Properties["NetworkAdapters"].Value;
+            }
+
+            return new List<String>();
         }
 
         private IEnumerable<String> GetPoshVariable(String variableName)

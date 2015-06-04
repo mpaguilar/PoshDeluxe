@@ -33,6 +33,7 @@ namespace PoshManagerCli
                 DisplayAdapters(posh);
                 System.Threading.Thread.Sleep(1000);
             }
+
         }
         async static void DisplayAdapters(PowerShell powerShell )
         {

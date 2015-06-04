@@ -57,7 +57,8 @@ namespace PoshManagerCli
                 "Write-Warning",
                 "Invoke-Command",
                 "Get-Item",
-                "Select-Object"
+                "Select-Object",
+                "New-Object"
             });
 
             //MigrateVariables(cleanIss, defaultIss);

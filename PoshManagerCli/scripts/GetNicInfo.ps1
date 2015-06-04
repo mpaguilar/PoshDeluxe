@@ -48,13 +48,5 @@ Process {
 		PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
 	}
 	
-	$Global:NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
-	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
-
-	New-Object PSObject -Property @{
-		NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
-		PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
-	}
-	
 }
 
