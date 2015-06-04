@@ -20,101 +20,12 @@ namespace PoshManagerCli
     {
         static void Main(string[] args)
         {
-
-            InitialSessionState defaultIss = InitialSessionState.CreateDefault();
-            InitialSessionState cleanIss = InitialSessionState.Create();
-
-            cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
-
-            MigrateCommands(cleanIss, defaultIss, new[] {
-                "*", // this gets two functions - one of them does dot-sourcing
-                "Get-WmiObject",
-                "Write-Verbose",
-                "Write-Debug",
-                "Write-Warning",
-                "Invoke-Command",
-                "Get-Item",
-                "Select-Object"
-            });
-
-            //MigrateVariables(cleanIss, defaultIss);
-            MigrateProviders(cleanIss, defaultIss);
-            //MigrateAssemblies(cleanIss, defaultIss);
-            //MigrateFormats(cleanIss, defaultIss);
-
-            // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
-
-            using (Runspace rs = RunspaceFactory.CreateRunspace(cleanIss))
+            using (ManagerShell mgr = new ManagerShell())
             {
-                rs.Open();
-                using( PowerShell posh = PowerShell.Create() ) {
-                    posh.Runspace = rs;
-                    OldSkool(posh);
-                }
+                var posh = mgr.GetPowerShell();
+                OldSkool(posh);
             }
         }
-
-        static void MigrateAssemblies( InitialSessionState clean,
-            InitialSessionState source) {
-
-                foreach (var a in source.Assemblies)
-                {
-                    clean.Assemblies.Add(a);
-                }
-        }
-
-        static void MigrateFormats(InitialSessionState clean,
-            InitialSessionState source) {
-
-            foreach( var f in source.Formats )
-            {
-                clean.Formats.Add(f);
-            }
-        
-        }
-        static void MigrateProviders( InitialSessionState clean,
-            InitialSessionState source)
-        {
-            foreach (var p in source.Providers)
-            {
-                clean.Providers.Add(p);
-            }
-        }
-
-        static void MigrateVariables(InitialSessionState clean,
-            InitialSessionState source)
-        {
-            foreach (var svar in source.Variables)
-            {
-                clean.Variables.Add(svar);
-            }
-        }
-
-        static void MigrateCommands(InitialSessionState clean, 
-            InitialSessionState source, 
-            String[] commands)
-        {
-            
-            foreach (var cmd in commands)
-            {
-                var check_cmd = clean.Commands.Where(c => c.Name == cmd);
-                if( 0 < check_cmd.Count() )
-                {
-                    var msg = String.Format("Command already in session state: {0}", cmd);
-                    Console.WriteLine(msg);
-                }
-
-                var scmds = source.Commands.Where(c => c.Name == cmd);
-                foreach (var scmd in scmds)
-                {
-                    var scmdCopy = (SessionStateCommandEntry)scmd.Clone();
-                    clean.Commands.Add(scmdCopy);
-                }
-            }
-        }
-
-        
-
         async static void OldSkool(PowerShell powerShell )
         {
 
