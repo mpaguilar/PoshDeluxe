@@ -23,10 +23,11 @@ namespace PoshManagerCli
             using (ManagerShell mgr = new ManagerShell())
             {
                 var posh = mgr.GetPowerShell();
-                OldSkool(posh);
+                DisplayAdapters(posh);
+                System.Threading.Thread.Sleep(1000);
             }
         }
-        async static void OldSkool(PowerShell powerShell )
+        async static void DisplayAdapters(PowerShell powerShell )
         {
 
             var netModule = new NetModule(
@@ -35,18 +36,31 @@ namespace PoshManagerCli
                 );
 
             var netWait = netModule.Refresh();
-            
-
+/*
             Task.WaitAll(new[] {
                 netWait
             });
+*/
+            await netWait;
 
-            // System.Threading.Thread.Sleep(1000);
+            DisplayErrors(powerShell);
+
+            var foo = netModule.NetworkAdapters.Select(mo => mo.Properties["Caption"].Value);
+            foreach (var f in foo)
+            {
+                Console.WriteLine(f);
+            }
+            
+        }
+
+        static void DisplayErrors(PowerShell powerShell)
+        {
             if (powerShell.HadErrors)
             {
                 ConsoleColor prev = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
-                var errors = powerShell.Streams.Error.Select((m) => {
+                var errors = powerShell.Streams.Error.Select((m) =>
+                {
                     if (null != m.Exception)
                         return m.Exception.Message;
                     else
@@ -59,15 +73,7 @@ namespace PoshManagerCli
                 }
                 Console.ForegroundColor = prev;
                 Console.WriteLine();
-                return;
             }
-
-            var foo = netModule.NetworkAdapters.Select(mo => mo.Properties["Caption"].Value);
-            foreach (var f in foo)
-            {
-                Console.WriteLine(f);
-            }
-            
         }
 
         static void DisplayMessages(NetModule net)
