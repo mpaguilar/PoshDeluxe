@@ -19,16 +19,20 @@ namespace PoshManagerCli
         {
             get { return _nics; }
         }
+
+        public IEnumerable<String> Routes { get { return _routes; } }
+
         public readonly String ComputerName;
 
         public NetModule(PowerShell powerShell, String computerName)
             : base( powerShell )
         {
             ComputerName = computerName;
-            var path = System.IO.Path.Combine(new [] {
-                Environment.CurrentDirectory,
-                "scripts\\GetNicInfo.ps1"
-            });
+        }
+
+        private void init()
+        {
+            Posh.Commands.Clear();
             DotInclude("scripts\\GetNicInfo.ps1");
         }
 
@@ -36,12 +40,13 @@ namespace PoshManagerCli
         {
             return Task.Run(() => {
                 RefreshNetworkAdapters();
-                // RefreshRoutes();
+                RefreshRoutes();                
             });
         }
 
         public void RefreshNetworkAdapters()
         {
+            init();
             Posh.AddStatement()
                 .AddCommand("Get-NetworkAdapter", true)
                 .AddArgument(ComputerName);
@@ -51,11 +56,13 @@ namespace PoshManagerCli
 
         public void RefreshRoutes()
         {
+            init();
             Posh.AddStatement()
                 .AddCommand("Get-PersistentRoutes", true)
                 .AddArgument(ComputerName);
 
-            _routes = Posh.Invoke<String>();
+            var rt = Posh.Invoke<String>();
+            _routes = rt;
         }
 
     }

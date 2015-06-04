@@ -36,12 +36,10 @@ namespace PoshManagerCli
                 );
 
             var netWait = netModule.Refresh();
-/*
+
             Task.WaitAll(new[] {
                 netWait
             });
-*/
-            await netWait;
 
             DisplayErrors(powerShell);
 
@@ -49,6 +47,11 @@ namespace PoshManagerCli
             foreach (var f in foo)
             {
                 Console.WriteLine(f);
+            }
+
+            foreach (var r in netModule.Routes)
+            {
+                Console.WriteLine(r);
             }
             
         }

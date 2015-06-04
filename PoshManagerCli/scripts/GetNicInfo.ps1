@@ -35,3 +35,5 @@ function Get-PersistentRoutes
     }
 }
 $VerbosePreference = "Continue"
+# Get-PersistentRoutes -ComputerName "vwin8"
+

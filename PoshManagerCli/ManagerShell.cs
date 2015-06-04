@@ -61,7 +61,24 @@ namespace PoshManagerCli
             });
 
             //MigrateVariables(cleanIss, defaultIss);
-            MigrateProviders(cleanIss, defaultIss);
+
+
+            foreach ( var p in defaultIss.Providers )
+            {
+                Console.WriteLine(p.Name);
+            }
+
+            MigrateProviders(cleanIss, defaultIss, new String[] {
+                "Function",
+//                "Variable",
+//                "Environment",
+//                "Alias",
+//                "WSMan",
+//                "Certificate",
+//                "Registry",
+                "FileSystem"
+            });
+
             //MigrateAssemblies(cleanIss, defaultIss);
             //MigrateFormats(cleanIss, defaultIss);
 
@@ -69,38 +86,6 @@ namespace PoshManagerCli
 
             return cleanIss;
 
-        }
-
-
-
-        public static PowerShell Create() {
-
-            var sh = PowerShell.Create();
-
-            InitialSessionState defaultIss = InitialSessionState.CreateDefault();
-            InitialSessionState cleanIss = InitialSessionState.Create();
-
-            cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
-
-            MigrateCommands(cleanIss, defaultIss, new[] {
-                "*", // this gets two functions - one of them does dot-sourcing
-                "Get-WmiObject",
-                "Write-Verbose",
-                "Write-Debug",
-                "Write-Warning",
-                "Invoke-Command",
-                "Get-Item",
-                "Select-Object"
-            });
-
-            //MigrateVariables(cleanIss, defaultIss);
-            MigrateProviders(cleanIss, defaultIss);
-            //MigrateAssemblies(cleanIss, defaultIss);
-            //MigrateFormats(cleanIss, defaultIss);
-
-            // var runPool = RunspaceFactory.CreateRunspacePool(cleanIss);
-
-            return sh;
         }
 
         static void MigrateAssemblies(InitialSessionState clean,
@@ -124,11 +109,14 @@ namespace PoshManagerCli
 
         }
         static void MigrateProviders(InitialSessionState clean,
-            InitialSessionState source)
+            InitialSessionState source,
+            String[] providers = null )
         {
+
             foreach (var p in source.Providers)
             {
-                clean.Providers.Add(p);
+                if( null == providers || providers.Contains(p.Name))
+                    clean.Providers.Add(p);
             }
         }
 
