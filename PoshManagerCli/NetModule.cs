@@ -38,7 +38,8 @@ namespace PoshManagerCli
 
         public Task Refresh()
         { 
-            return Task.Run(() =>
+            Task t = 
+            Task.Run(() =>
             {
                 Posh.Commands.Clear();
 
@@ -53,11 +54,22 @@ namespace PoshManagerCli
                 Console.WriteLine("meh");
                 
             });
+
+            t.ContinueWith((task) => Console.WriteLine("Finished"));
+
+            return t;
         }
 
         private IEnumerable<String> GetPoshVariable(String variableName)
         {
-            var foo = Posh.Runspace.SessionStateProxy.GetVariable(variableName) as object[]; 
+            var bar = Posh.Runspace.SessionStateProxy.GetVariable(variableName);
+            var foo = bar as object[];
+
+            if( null == foo )
+            {
+                
+            }
+
             if (null != foo)
                 return new List<String>(foo.Select(o => o.ToString()));
             else

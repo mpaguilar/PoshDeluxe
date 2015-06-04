@@ -34,17 +34,27 @@ Process {
 		)
 
 		Process {
-			[String[]]$routes = Invoke-Command -ComputerName $ComputerName -ScriptBlock {
-				Get-Item "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\PersistentRoutes" | 
-					select-object -ExpandProperty Property
-			}
+			$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName)
+			$subkey = $reg.OpenSubKey("SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\PersistentRoutes")
+			[String[]]$routes = @(,$subkey.GetValueNames())
 
 			$routes
+
 		}
 	}
 
-
+	New-Object PSObject -Property @{
+		NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
+		PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
+	}
+	
 	$Global:NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
 	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
+
+	New-Object PSObject -Property @{
+		NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
+		PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
+	}
+	
 }
 
