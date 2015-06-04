@@ -20,6 +20,13 @@ namespace PoshManagerCli
     {
         static void Main(string[] args)
         {
+            var pas = "password";
+            var sec = new System.Security.SecureString();
+            foreach( var c in pas.ToCharArray() ) {
+                sec.AppendChar(c);
+            }
+
+            PSCredential creds = new PSCredential("administrator", sec);
             using (ManagerShell mgr = new ManagerShell())
             {
                 var posh = mgr.GetPowerShell();
