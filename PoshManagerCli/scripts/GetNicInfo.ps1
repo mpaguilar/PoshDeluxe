@@ -46,8 +46,28 @@ Process {
 		}
 	}
 
+	function Get-NetworkSettings
+	{
+		Param(
+			[Parameter(mandatory=$true)]
+			[String]
+			$ComputerName
+		)
+
+		Process {
+
+			write-Verbose "Getting network adapter settings from $ComputerName"
+			$nics = Get-WmiObject -ComputerName $ComputerName `
+				-Class Win32_NetworkAdapterSettings
+
+			$nics | select Caption
+
+		}
+	}
+
 	$Global:NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
-	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName 
+	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName
+	$Global:NetworkAdapterSettings = Get-NetworkAdapter -ComputerName $ComputerName 
 
 }
 

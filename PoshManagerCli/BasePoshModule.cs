@@ -73,6 +73,8 @@ namespace PoshManagerCli
 
                         Posh.Streams.Verbose.Clear();
                     }
+                    // surrender the thread...
+                    System.Threading.Thread.Sleep(1);
                 }
             }
 

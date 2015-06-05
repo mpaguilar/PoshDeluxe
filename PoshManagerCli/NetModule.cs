@@ -15,12 +15,15 @@ namespace PoshManagerCli
 
         private IEnumerable<String> _nics = null;
         private IEnumerable<String> _routes = null;
+        private IEnumerable<String> _netSettings = null;
         public IEnumerable<String> NetworkAdapters
         {
             get { return _nics; }
         }
 
         public IEnumerable<String> Routes { get { return _routes; } }
+
+        public IEnumerable<String> NetworkSettings { get { return _netSettings; } }
 
         public NetModule(PowerShell powerShell, String computerName)
             : base( powerShell, computerName )
@@ -42,6 +45,7 @@ namespace PoshManagerCli
 
                 _nics = GetPoshVariable("NetworkAdapters");
                 _routes = GetPoshVariable("PersistentRoutes");
+                _netSettings = GetPoshVariable("NetworkAdapterSettings");
                 
             });
 
