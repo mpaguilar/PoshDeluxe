@@ -48,7 +48,7 @@ namespace PoshManagerCli
 
                 var ret = Posh.Invoke();
 
-                ExtractResults(ret);
+                // ExtractResults(ret);
 
                 _nics = GetPoshVariable("NetworkAdapters");
                 _routes = GetPoshVariable("PersistentRoutes");
@@ -62,30 +62,20 @@ namespace PoshManagerCli
             return t;
         }
 
-        private IEnumerable<String> ExtractResults(Collection<PSObject> resultObjects )
-        {
-            foreach (var o in resultObjects)
-            {
-                var meh = o.Properties["NetworkAdapters"].Value;
-            }
-
-            return new List<String>();
-        }
-
         private IEnumerable<String> GetPoshVariable(String variableName)
         {
             var bar = Posh.Runspace.SessionStateProxy.GetVariable(variableName);
-            var foo = bar as object[];
 
-            if( null == foo )
+            if (null != bar as object[])
             {
-                
+                var foo = bar as object[];
+                return new List<String>(foo.Select(o => o.ToString()));
             }
 
-            if (null != foo)
-                return new List<String>(foo.Select(o => o.ToString()));
-            else
-                return new String[0];
+            if (null != bar as String)
+                return new List<String>(new[] { bar as String });
+
+            return new String[0];
         }
 
         /// <summary>
