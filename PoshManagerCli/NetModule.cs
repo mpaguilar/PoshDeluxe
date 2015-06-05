@@ -30,12 +30,6 @@ namespace PoshManagerCli
             ComputerName = computerName;
         }
 
-        private void init()
-        {
-            Posh.Commands.Clear();
-            // DotInclude("scripts\\GetNicInfo.ps1");
-        }
-
         public Task Refresh()
         { 
             Task t = 
@@ -48,16 +42,10 @@ namespace PoshManagerCli
 
                 var ret = Posh.Invoke();
 
-                // ExtractResults(ret);
-
                 _nics = GetPoshVariable("NetworkAdapters");
                 _routes = GetPoshVariable("PersistentRoutes");
-
-                Console.WriteLine("meh");
                 
             });
-
-            t.ContinueWith((task) => Console.WriteLine("Finished"));
 
             return t;
         }
@@ -77,35 +65,5 @@ namespace PoshManagerCli
 
             return new String[0];
         }
-
-        /// <summary>
-        /// ///////////
-        /// </summary>
-
-        public void RefreshNetworkAdapters()
-        {
-            init();
-            Posh.AddStatement()
-                .AddCommand("Get-NetworkAdapter", true)
-                .AddArgument(ComputerName);
-
-
-            var meh = Posh.Invoke<ManagementObject>();
-            
-            
-            Console.WriteLine("meh");
-        }
-
-        public void RefreshRoutes()
-        {
-            init();
-            Posh.AddStatement()
-                .AddCommand("Get-PersistentRoutes", true)
-                .AddArgument(ComputerName);
-
-            var rt = Posh.Invoke<String>();
-            // _routes = rt;
-        }
-
     }
 }
