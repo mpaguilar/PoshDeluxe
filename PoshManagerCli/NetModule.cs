@@ -22,12 +22,10 @@ namespace PoshManagerCli
 
         public IEnumerable<String> Routes { get { return _routes; } }
 
-        public readonly String ComputerName;
-
         public NetModule(PowerShell powerShell, String computerName)
-            : base( powerShell )
+            : base( powerShell, computerName )
         {
-            ComputerName = computerName;
+
         }
 
         public Task Refresh()
@@ -37,8 +35,8 @@ namespace PoshManagerCli
             {
                 Posh.Commands.Clear();
 
-                Posh.AddScript(
-                    String.Format("scripts\\GetNicInfo.ps1 -ComputerName {0}", ComputerName));
+                Posh.AddCommand("scripts\\GetNicInfo.ps1")
+                    .AddParameter("ComputerName", ComputerName);
 
                 var ret = Posh.Invoke();
 
@@ -48,22 +46,6 @@ namespace PoshManagerCli
             });
 
             return t;
-        }
-
-        private IEnumerable<String> GetPoshVariable(String variableName)
-        {
-            var bar = Posh.Runspace.SessionStateProxy.GetVariable(variableName);
-
-            if (null != bar as object[])
-            {
-                var foo = bar as object[];
-                return new List<String>(foo.Select(o => o.ToString()));
-            }
-
-            if (null != bar as String)
-                return new List<String>(new[] { bar as String });
-
-            return new String[0];
         }
     }
 }

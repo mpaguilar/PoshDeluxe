@@ -30,12 +30,11 @@ namespace PoshManagerCli
             using (ManagerShell mgr = new ManagerShell())
             {
                 var posh = mgr.GetPowerShell();
-                DisplayAdapters(posh);
-                System.Threading.Thread.Sleep(1000);
+                RefreshAdapters(posh);
             }
-
         }
-        async static void DisplayAdapters(PowerShell powerShell )
+
+        static void RefreshAdapters(PowerShell powerShell )
         {
 
             var netModule = new NetModule(
@@ -45,9 +44,7 @@ namespace PoshManagerCli
 
             var netWait = netModule.Refresh();
 
-            Task.WaitAll(new[] {
-                netWait
-            });
+            Task.WaitAll(new[] { netWait });
 
             DisplayErrors(powerShell);
 
@@ -61,7 +58,6 @@ namespace PoshManagerCli
             {
                 Console.WriteLine(r);
             }
-            
         }
 
         static void DisplayErrors(PowerShell powerShell)

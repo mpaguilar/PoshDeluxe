@@ -21,7 +21,6 @@ namespace PoshManagerCli
         {
             this.Runspace = RunspaceFactory.CreateRunspace(
                 GetInitialSessionState());
-
             this.Runspace.Open();
         }
 
@@ -49,16 +48,17 @@ namespace PoshManagerCli
 
             cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
 
+            //SessionStateTypeEntry meh = new SessionStateTypeEntry()
+
             MigrateCommands(cleanIss, defaultIss, new[] {
                 "*", // this gets two functions - one of them does dot-sourcing
                 "Get-WmiObject",
                 "Write-Verbose",
                 "Write-Debug",
                 "Write-Warning",
-                "Invoke-Command",
-                "Get-Item",
-                "Select-Object",
-                "New-Object"
+//                "Invoke-Command",
+//                "Get-Item",
+                "Select-Object"
             });
 
             //MigrateVariables(cleanIss, defaultIss);
@@ -67,7 +67,7 @@ namespace PoshManagerCli
             MigrateProviders(cleanIss, defaultIss, new String[] {
                 "Function",
                 "Variable",
-                "Environment",
+//                "Environment",
 //                "Alias",
 //                "WSMan",
 //                "Certificate",
