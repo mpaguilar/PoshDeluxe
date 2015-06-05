@@ -34,15 +34,20 @@ namespace PoshManagerCli
             }
         }
 
+        static void DumpMsg( String msg )
+        {
+            Console.WriteLine(msg);
+        }
+
         static void RefreshAdapters(PowerShell powerShell )
         {
 
             var netModule = new NetModule(
                 powerShell,
-                "vwin8"
+                "grunt"
                 );
 
-            var netWait = netModule.Refresh();
+            var netWait = netModule.Refresh(DumpMsg);
 
             Task.WaitAll(new[] { netWait });
 

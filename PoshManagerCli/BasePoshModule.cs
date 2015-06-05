@@ -54,5 +54,29 @@ namespace PoshManagerCli
 
             return new String[0];
         }
+
+        public void Invoke(Action<String> msgOut)
+        {
+            var poshWait = Posh.BeginInvoke();
+
+            if (null != msgOut)
+            {
+                while (!poshWait.IsCompleted)
+                {
+                    // we don't want to clear the stream unless
+                    // there's been something to process
+                    // otherwise, messages are dropped.
+                    if (Posh.Streams.Verbose.Count > 0)
+                    {
+                        foreach (var msg in VerboseMessages)
+                            msgOut(msg);
+
+                        Posh.Streams.Verbose.Clear();
+                    }
+                }
+            }
+
+            Posh.EndInvoke(poshWait);
+        }
     }
 }

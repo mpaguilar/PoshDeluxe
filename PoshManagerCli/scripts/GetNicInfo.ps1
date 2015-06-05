@@ -34,6 +34,9 @@ Process {
 		)
 
 		Process {
+
+			write-Verbose "Getting static routes from $ComputerName"
+
 			$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName)
 			$subkey = $reg.OpenSubKey("SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\PersistentRoutes")
 			[String[]]$routes = @(,$subkey.GetValueNames())

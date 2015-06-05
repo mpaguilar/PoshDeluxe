@@ -28,7 +28,7 @@ namespace PoshManagerCli
 
         }
 
-        public Task Refresh()
+        public Task Refresh(Action<String> msgOut = null)
         { 
             Task t = 
             Task.Run(() =>
@@ -38,7 +38,7 @@ namespace PoshManagerCli
                 Posh.AddCommand("scripts\\GetNicInfo.ps1")
                     .AddParameter("ComputerName", ComputerName);
 
-                var ret = Posh.Invoke();
+                Invoke(msgOut);
 
                 _nics = GetPoshVariable("NetworkAdapters");
                 _routes = GetPoshVariable("PersistentRoutes");

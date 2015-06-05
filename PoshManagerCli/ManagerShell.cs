@@ -51,7 +51,10 @@ namespace PoshManagerCli
             //SessionStateTypeEntry meh = new SessionStateTypeEntry()
 
             MigrateCommands(cleanIss, defaultIss, new[] {
-                "*", // this gets two functions - one of them does dot-sourcing
+                // "*" gets two functions 
+                // one of them does dot-sourcing
+                // the other allows scripts as commands (I think)
+                "*", 
                 "Get-WmiObject",
                 "Write-Verbose",
                 "Write-Debug",
