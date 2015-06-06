@@ -36,8 +36,6 @@ namespace PoshManagerCli
             Task t = 
             Task.Run(() =>
             {
-                Posh.Commands.Clear();
-
                 Posh.AddCommand("scripts\\GetNicInfo.ps1")
                     .AddParameter("ComputerName", ComputerName);
 

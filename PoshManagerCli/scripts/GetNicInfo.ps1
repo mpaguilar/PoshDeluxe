@@ -56,18 +56,27 @@ Process {
 
 		Process {
 
+            $all_ips = New-Object System.Collections.ArrayList
 			write-Verbose "Getting network adapter settings from $ComputerName"
 			$nics = Get-WmiObject -ComputerName $ComputerName `
-				-Class Win32_NetworkAdapterSettings
+				-Class Win32_NetworkAdapterConfiguration
 
-			$nics | select Caption
+			$nics | select Index,Description,IPAddress,IPSubnet,IPEnabled,DefaultIPGateway |
+            where { $_.IPEnabled } |
+            foreach {
+                $nic = $_
+                $ips = $nic.IPAddress
+                $ips | foreach { $all_ips.Add($_) | out-null }
+            }
+
+            $all_ips
 
 		}
 	}
 
 	$Global:NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
 	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName
-	$Global:NetworkAdapterSettings = Get-NetworkAdapter -ComputerName $ComputerName 
+	Get-NetworkSettings -ComputerName $ComputerName 
 
 }
 
