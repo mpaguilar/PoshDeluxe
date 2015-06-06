@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.Management.Automation;
 
-namespace PoshManagerCli
+namespace PoshManager
 {
     public class BasePoshModule
     {
@@ -20,7 +20,7 @@ namespace PoshManagerCli
                 .AddScript(String.Format(". \"{0}\"", script));
         }
 
-        public BasePoshModule(PowerShell powerShell, String computerName )
+        public BasePoshModule(PowerShell powerShell, String computerName)
         {
             Posh = powerShell;
             ComputerName = computerName;

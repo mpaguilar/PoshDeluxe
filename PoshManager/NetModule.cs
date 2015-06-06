@@ -8,7 +8,7 @@ using System.Management;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
 
-namespace PoshManagerCli
+namespace PoshManager
 {
     public class NetModule : BasePoshModule
     {
@@ -26,14 +26,14 @@ namespace PoshManagerCli
         public IEnumerable<String> NetworkSettings { get { return _netSettings; } }
 
         public NetModule(PowerShell powerShell, String computerName)
-            : base( powerShell, computerName )
+            : base(powerShell, computerName)
         {
 
         }
 
         public Task Refresh(Action<String> msgOut = null)
-        { 
-            Task t = 
+        {
+            Task t =
             Task.Run(() =>
             {
                 Posh.AddCommand("scripts\\GetNicInfo.ps1")
@@ -44,10 +44,11 @@ namespace PoshManagerCli
                 _nics = GetPoshVariable("NetworkAdapters");
                 _routes = GetPoshVariable("PersistentRoutes");
                 _netSettings = GetPoshVariable("NetworkAdapterSettings");
-                
+
             });
 
             return t;
         }
     }
 }
+

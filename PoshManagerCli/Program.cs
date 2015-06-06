@@ -14,6 +14,8 @@ using Microsoft.PowerShell.Commands;
 using Microsoft.PowerShell.Commands.Management;
 using PowerShell = System.Management.Automation.PowerShell;
 
+using PoshManager;
+
 namespace PoshManagerCli
 {
     class Program

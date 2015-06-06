@@ -11,7 +11,7 @@ using Microsoft.PowerShell.Commands;
 using Microsoft.PowerShell.Commands.Management;
 using PowerShell = System.Management.Automation.PowerShell;
 
-namespace PoshManagerCli
+namespace PoshManager
 {
     public class ManagerShell : IDisposable
     {
@@ -59,6 +59,9 @@ namespace PoshManagerCli
                 "Write-Verbose",
                 "Write-Debug",
                 "Write-Warning",
+                "Add-Type",
+                "ForEach-Object",
+                "New-Object",
 //                "Invoke-Command",
 //                "Get-Item",
                 "Select-Object"
@@ -109,12 +112,12 @@ namespace PoshManagerCli
         }
         static void MigrateProviders(InitialSessionState clean,
             InitialSessionState source,
-            String[] providers = null )
+            String[] providers = null)
         {
 
             foreach (var p in source.Providers)
             {
-                if( null == providers || providers.Contains(p.Name))
+                if (null == providers || providers.Contains(p.Name))
                     clean.Providers.Add(p);
             }
         }

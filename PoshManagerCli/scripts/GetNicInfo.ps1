@@ -1,12 +1,43 @@
 ﻿
 Param (
-	[Parameter(mandatory=$true)]
-	$ComputerName,
+	# [Parameter(mandatory=$true)]
+	$ComputerName = "vwin8",
 
 	$Credentials
 )
 
+Begin {
+	$netmodule_objects = @"
+	using System;
+	using System.Collections.Generic;
+
+
+	namespace NetModule {
+	public class NetworkAdapter {
+		public String Caption = String.Empty;
+		public List<PersistentRoute> Routes = new List<PersistentRoute>();
+		public List<IPAddress> IPAddresses = new List<IPAddress>();
+	}
+	
+	public class PersistentRoute {
+		public String Route = String.Empty;
+	}
+
+	public class IPAddress {
+		
+		public String Address = String.Empty;
+		public String SubnetMask = String.Empty;
+	}
+	
+	}
+"@
+
+Add-Type -TypeDefinition $netmodule_objects -Language CSharp 
+
+}
+
 Process {
+	# returns IP Enabled network adapters.
 	function Get-NetworkAdapter
 	{
 		Param (
@@ -18,9 +49,13 @@ Process {
 		Process {
 			write-verbose "Getting network adapters from $ComputerName"
 
-			[String[]]$nic = Get-WmiObject -ComputerName $ComputerName -Class Win32_NetworkAdapter |
-				select-Object -ExpandProperty Caption
-
+			[NetModule.NetworkAdapter[]]$nic = Get-WmiObject -ComputerName $ComputerName -Class Win32_NetworkAdapter |
+				select-Object -ExpandProperty Caption |
+				foreach-object {
+					new-object NetModule.NetworkAdapter -Property @{
+						Caption = $_
+					}
+				}
 			$nic
 		}
 	}
@@ -39,10 +74,15 @@ Process {
 
 			$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName)
 			$subkey = $reg.OpenSubKey("SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\PersistentRoutes")
-			[String[]]$routes = @(,$subkey.GetValueNames())
 
-			$routes
+			$subkey.GetValueNames() |
+			foreach-object {
+				$value = $_ 
 
+				new-object NetModule.PersistentRoute -Property  @{
+					Route = $value
+				}
+			}
 		}
 	}
 
@@ -61,12 +101,18 @@ Process {
 			$nics = Get-WmiObject -ComputerName $ComputerName `
 				-Class Win32_NetworkAdapterConfiguration
 
-			$nics | select Index,Description,IPAddress,IPSubnet,IPEnabled,DefaultIPGateway |
-            where { $_.IPEnabled } |
-            foreach {
+			$enabled_nics = $nics | 
+			select-object Index,Description,IPAddress,IPSubnet,IPEnabled,DefaultIPGateway |
+            where-object { $_.IPEnabled } 
+			
+			$enabled_nics |
+            foreach-object {
                 $nic = $_
                 $ips = $nic.IPAddress
-                $ips | foreach { $all_ips.Add($_) | out-null }
+                $ips | foreach { 
+
+					$all_ips.Add($_)
+				}
             }
 
             $all_ips
@@ -74,9 +120,9 @@ Process {
 		}
 	}
 
-	$Global:NetworkAdapters = Get-NetworkAdapter -ComputerName $ComputerName
-	$Global:PersistentRoutes = Get-PersistentRoutes -ComputerName $ComputerName
-	Get-NetworkSettings -ComputerName $ComputerName 
+	$network_adapters = Get-NetworkAdapter -ComputerName $ComputerName
+	Get-PersistentRoutes -ComputerName $ComputerName
+	# Get-NetworkSettings -ComputerName $ComputerName 
 
 }
 
