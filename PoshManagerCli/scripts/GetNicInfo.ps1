@@ -126,12 +126,10 @@ Process {
 	## $network_settings
 
 	$network_adapters |
-	# select-Object -First 1 |
 	foreach-Object {
 		$adp = $_ 
-		$set = $network_settings  | where { $_.Index -eq $adp.Id }
+		$set = $network_settings  | where-Object  { $_.Index -eq $adp.Id }
 
-		write-Host 
 		for( $x = 0; $x -lt $set.IPAddress.Length; $x = $x + 1 )
 		{
 			$ip = $set.IPAddress[$x]
@@ -142,13 +140,7 @@ Process {
 			}
 			$adp.IPAddresses.Add($addy);
 		}
-		#$set.IPAddress | 
-		#ForEach-Object {
-		#	$ip = $_
 
-		#	$adp.IPAddresses.Add($ip)
-		#}	
-		#$set
 		$adp
 	}
 	# Get-PersistentRoutes -ComputerName $ComputerName

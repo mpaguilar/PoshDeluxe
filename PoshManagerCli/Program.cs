@@ -56,7 +56,7 @@ namespace PoshManagerCli
             DisplayErrors(powerShell);
 
             var foo = netModule.NetworkAdapters;
-            foreach (var f in foo)
+            foreach (var f in  foo)
             {
                 Console.WriteLine(f);
             }

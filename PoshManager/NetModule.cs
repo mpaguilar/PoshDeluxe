@@ -41,9 +41,12 @@ namespace PoshManager
 
                 Invoke(msgOut);
 
-                _nics = GetPoshVariable("NetworkAdapters");
-                _routes = GetPoshVariable("PersistentRoutes");
-                _netSettings = GetPoshVariable("NetworkAdapterSettings");
+                _nics = // GetPoshVariable("NetworkAdapters");
+                    new List<String>();
+                _routes = // GetPoshVariable("PersistentRoutes");
+                    new List<String>();
+                _netSettings = // GetPoshVariable("NetworkAdapterSettings");
+                    new List<String>();
 
             });
 

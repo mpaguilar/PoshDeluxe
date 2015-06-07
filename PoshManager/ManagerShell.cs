@@ -63,6 +63,7 @@ namespace PoshManager
                 "Add-Type",
                 "ForEach-Object",
                 "New-Object",
+                "Where-Object",
 //                "Invoke-Command",
 //                "Get-Item",
                 "Select-Object"
