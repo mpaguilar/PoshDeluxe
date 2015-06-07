@@ -118,33 +118,41 @@ Process {
 		}
 	}
 
-	$network_adapters = Get-NetworkAdapter -ComputerName $ComputerName
-	# $network_adapters
-	
+	function Get-CombinedNetSettings 
+	{
+		Param(
+			[Parameter(mandatory=$true)]
+			[String]
+			$ComputerName
+		)
 
-	$network_settings = Get-NetworkSettings -ComputerName $ComputerName 
-	## $network_settings
+		Process {
+			$network_adapters = Get-NetworkAdapter -ComputerName $ComputerName
 
-	$network_adapters |
-	foreach-Object {
-		$adp = $_ 
-		$set = $network_settings  | where-Object  { $_.Index -eq $adp.Id }
+			$network_settings = Get-NetworkSettings -ComputerName $ComputerName 
 
-		for( $x = 0; $x -lt $set.IPAddress.Length; $x = $x + 1 )
-		{
-			$ip = $set.IPAddress[$x]
-			$mask = $set.IPSubnet[$x]
-			$addy = new-Object NetModules.IPAddress -Property @{
-				Address = $ip 
-				SubnetMask = $mask
+			$network_adapters |
+			foreach-Object {
+				$adp = $_ 
+				$set = $network_settings  | where-Object  { $_.Index -eq $adp.Id }
+
+				for( $x = 0; $x -lt $set.IPAddress.Length; $x = $x + 1 )
+				{
+					$ip = $set.IPAddress[$x]
+					$mask = $set.IPSubnet[$x]
+					$addy = new-Object NetModules.IPAddress -Property @{
+						Address = $ip 
+						SubnetMask = $mask
+					}
+					$adp.IPAddresses.Add($addy);
+				}
+
+				$adp
 			}
-			$adp.IPAddresses.Add($addy);
 		}
-
-		$adp
 	}
-	# Get-PersistentRoutes -ComputerName $ComputerName
-	# Get-NetworkSettings -ComputerName $ComputerName 
+
+	Get-CombinedNetSettings -ComputerName $ComputerName 
 
 }
 
