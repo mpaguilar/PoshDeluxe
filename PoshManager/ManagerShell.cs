@@ -56,6 +56,7 @@ namespace PoshManager
                 // the other allows scripts as commands (I think)
                 "*", 
                 "Get-WmiObject",
+                "Write-Host",
                 "Write-Verbose",
                 "Write-Debug",
                 "Write-Warning",

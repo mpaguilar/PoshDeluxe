@@ -12,9 +12,13 @@ Begin {
 	using System.Collections.Generic;
 
 
-	namespace NetModule {
+	namespace NetModules {
 	public class NetworkAdapter {
-		public String Caption = String.Empty;
+		public Int32 Id = -1;
+		public String MACAddress = String.Empty;
+		public Int32 MaxSpeed = -1;
+		public bool NetEnabled = false;
+		public String Description = String.Empty;
 		public List<PersistentRoute> Routes = new List<PersistentRoute>();
 		public List<IPAddress> IPAddresses = new List<IPAddress>();
 	}
@@ -27,6 +31,10 @@ Begin {
 		
 		public String Address = String.Empty;
 		public String SubnetMask = String.Empty;
+
+		public override String ToString() {
+			return String.Format("{0}/{1}", Address, SubnetMask);
+		}
 	}
 	
 	}
@@ -45,18 +53,22 @@ Process {
 			[String]
 			$ComputerName
 		)
-
+		
 		Process {
 			write-verbose "Getting network adapters from $ComputerName"
 
-			[NetModule.NetworkAdapter[]]$nic = Get-WmiObject -ComputerName $ComputerName -Class Win32_NetworkAdapter |
-				select-Object -ExpandProperty Caption |
-				foreach-object {
-					new-object NetModule.NetworkAdapter -Property @{
-						Caption = $_
+			Get-WmiObject -Class Win32_NetworkAdapter -ComputerName $ComputerName |
+				select-object DeviceID, MACAddress, MaxSpeed, NetEnabled, Description |
+				foreach-Object {
+					$nic = $_ 
+					new-Object NetModules.NetworkAdapter -Property @{
+						Id = $nic.DeviceID
+						MACAddress = $nic.MACAddress
+						MaxSpeed = $nic.MaxSpeed
+						NetEnabled = $nic.NetEnabled
+						Description = $nic.Description
 					}
 				}
-			$nic
 		}
 	}
 
@@ -79,7 +91,7 @@ Process {
 			foreach-object {
 				$value = $_ 
 
-				new-object NetModule.PersistentRoute -Property  @{
+				new-object NetModules.PersistentRoute -Property  @{
 					Route = $value
 				}
 			}
@@ -99,29 +111,47 @@ Process {
             $all_ips = New-Object System.Collections.ArrayList
 			write-Verbose "Getting network adapter settings from $ComputerName"
 			$nics = Get-WmiObject -ComputerName $ComputerName `
-				-Class Win32_NetworkAdapterConfiguration
-
-			$enabled_nics = $nics | 
-			select-object Index,Description,IPAddress,IPSubnet,IPEnabled,DefaultIPGateway |
-            where-object { $_.IPEnabled } 
+				-Class Win32_NetworkAdapterConfiguration | 
+				select-object Index,Description,IPAddress,IPSubnet,IPEnabled,DefaultIPGateway
 			
-			$enabled_nics |
-            foreach-object {
-                $nic = $_
-                $ips = $nic.IPAddress
-                $ips | foreach { 
-
-					$all_ips.Add($_)
-				}
-            }
-
-            $all_ips
-
+			$nics
 		}
 	}
 
 	$network_adapters = Get-NetworkAdapter -ComputerName $ComputerName
-	Get-PersistentRoutes -ComputerName $ComputerName
+	# $network_adapters
+	
+
+	$network_settings = Get-NetworkSettings -ComputerName $ComputerName 
+	## $network_settings
+
+	$network_adapters |
+	# select-Object -First 1 |
+	foreach-Object {
+		$adp = $_ 
+		$set = $network_settings  | where { $_.Index -eq $adp.Id }
+
+		write-Host 
+		for( $x = 0; $x -lt $set.IPAddress.Length; $x = $x + 1 )
+		{
+			$ip = $set.IPAddress[$x]
+			$mask = $set.IPSubnet[$x]
+			$addy = new-Object NetModules.IPAddress -Property @{
+				Address = $ip 
+				SubnetMask = $mask
+			}
+			$adp.IPAddresses.Add($addy);
+		}
+		#$set.IPAddress | 
+		#ForEach-Object {
+		#	$ip = $_
+
+		#	$adp.IPAddresses.Add($ip)
+		#}	
+		#$set
+		$adp
+	}
+	# Get-PersistentRoutes -ComputerName $ComputerName
 	# Get-NetworkSettings -ComputerName $ComputerName 
 
 }
