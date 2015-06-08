@@ -33,7 +33,10 @@ namespace PoshManagerCli
             {
                 var posh = mgr.GetPowerShell();
                 RefreshAdapters(posh);
+                
             }
+
+
         }
 
         static void DumpMsg( String msg )
@@ -59,11 +62,6 @@ namespace PoshManagerCli
             foreach (var f in  foo)
             {
                 Console.WriteLine(f);
-            }
-
-            foreach (var r in netModule.Routes)
-            {
-                Console.WriteLine(r);
             }
         }
 

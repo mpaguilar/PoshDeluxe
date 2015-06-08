@@ -7,40 +7,8 @@ Param (
 )
 
 Begin {
-	$netmodule_objects = @"
-	using System;
-	using System.Collections.Generic;
 
-
-	namespace NetModules {
-	public class NetworkAdapter {
-		public Int32 Id = -1;
-		public String MACAddress = String.Empty;
-		public Int32 MaxSpeed = -1;
-		public bool NetEnabled = false;
-		public String Description = String.Empty;
-		public List<PersistentRoute> Routes = new List<PersistentRoute>();
-		public List<IPAddress> IPAddresses = new List<IPAddress>();
-	}
-	
-	public class PersistentRoute {
-		public String Route = String.Empty;
-	}
-
-	public class IPAddress {
-		
-		public String Address = String.Empty;
-		public String SubnetMask = String.Empty;
-
-		public override String ToString() {
-			return String.Format("{0}/{1}", Address, SubnetMask);
-		}
-	}
-	
-	}
-"@
-
-Add-Type -TypeDefinition $netmodule_objects -Language CSharp 
+Add-Type -Path "C:\users\michael\Documents\Visual Studio 2013\Projects\RxPlayground\PoshManagerCli\bin\debug\PoshManager.dll"
 
 }
 
@@ -61,7 +29,7 @@ Process {
 				select-object DeviceID, MACAddress, MaxSpeed, NetEnabled, Description |
 				foreach-Object {
 					$nic = $_ 
-					new-Object NetModules.NetworkAdapter -Property @{
+					new-Object PoshManager.NetModule+NetworkAdapter -Property @{
 						Id = $nic.DeviceID
 						MACAddress = $nic.MACAddress
 						MaxSpeed = $nic.MaxSpeed
@@ -91,7 +59,7 @@ Process {
 			foreach-object {
 				$value = $_ 
 
-				new-object NetModules.PersistentRoute -Property  @{
+				new-object PoshManager.NetModule+PersistentRoute -Property  @{
 					Route = $value
 				}
 			}
@@ -140,7 +108,7 @@ Process {
 				{
 					$ip = $set.IPAddress[$x]
 					$mask = $set.IPSubnet[$x]
-					$addy = new-Object NetModules.IPAddress -Property @{
+					$addy = new-Object PoshManager.NetModule+IPAddress -Property @{
 						Address = $ip 
 						SubnetMask = $mask
 					}

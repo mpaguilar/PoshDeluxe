@@ -55,7 +55,7 @@ namespace PoshManager
             return new String[0];
         }
 
-        public void Invoke(Action<String> msgOut)
+        public PSDataCollection<PSObject> Invoke(Action<String> msgOut)
         {
             var poshWait = Posh.BeginInvoke();
 
@@ -78,7 +78,7 @@ namespace PoshManager
                 }
             }
 
-            Posh.EndInvoke(poshWait);
+            return Posh.EndInvoke(poshWait);
         }
     }
 }
