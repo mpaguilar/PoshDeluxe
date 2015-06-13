@@ -55,6 +55,38 @@ namespace PoshManager
             return new String[0];
         }
 
+        public PSDataCollection<PSObject> Invoke(IPoshStream stream)
+        {
+            var poshWait = Posh.BeginInvoke();
+
+
+            while (!poshWait.IsCompleted)
+            {
+                // we don't want to clear the stream unless
+                // there's been something to process
+                // otherwise, messages are dropped.
+                if (Posh.Streams.Verbose.Count > 0)
+                {
+                    foreach (var msg in VerboseMessages)
+                        stream.VerboseWriter(msg);
+
+                    Posh.Streams.Verbose.Clear();
+                }
+
+                if(Posh.Streams.Warning.Count > 0 )
+                {
+                    foreach( var msg in WarningMessages )
+                    {
+                        stream.WarningWriter(msg);
+                    }
+                }
+                // surrender the thread...
+                System.Threading.Thread.Sleep(1);
+            }
+
+            return Posh.EndInvoke(poshWait);
+        }
+
         public PSDataCollection<PSObject> Invoke(Action<String> msgOut)
         {
             var poshWait = Posh.BeginInvoke();

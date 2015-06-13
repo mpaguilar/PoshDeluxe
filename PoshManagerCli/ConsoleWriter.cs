@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using PoshManager;
+
 namespace PoshManagerCli
 {
-    public class ConsoleWriter
+    public class ConsoleWriter : IPoshStream
     {
 
         public enum MessageType
@@ -17,11 +19,10 @@ namespace PoshManagerCli
             Error
         }
 
-        public Action<String> VerboseWriter;
-        public Action<String> DebugWriter;
-        public Action<String> WarningWriter;
-        public Action<String> ErrorWriter;
-
+        public Action<String> VerboseWriter { get; set; }
+        public Action<String> DebugWriter { get; set; }
+        public Action<String> WarningWriter { get; set; }
+        public Action<String> ErrorWriter { get; set; }
 
         public ConsoleWriter()
         {

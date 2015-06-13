@@ -26,85 +26,32 @@ namespace PoshManagerCli
         static void Main(string[] args)
         {
             var cw = new ConsoleWriter();
-            var vw = cw.Writer(M.Verbose);
 
-            vw("let's find out");
-        }
-
-        static void RefreshAdapters(PowerShell powerShell)
-        {
-
-            var netModule = new NetModule(
-                powerShell,
-                "grunt"
-                );
-
-            var netWait = netModule.Refresh(DumpMsg);
-
-
-
-            Task.WaitAll(new[] { netWait });
-
-            DisplayErrors(powerShell);
-
-            var foo = netModule.NetworkAdapters;
-            foreach (var f in foo)
-            {
-                Console.WriteLine(f);
-            }
-        }
-
-        static void YetAnotherWorking()
-        {
-            var pas = "password";
-            var sec = new System.Security.SecureString();
-            foreach (var c in pas.ToCharArray())
-            {
-                sec.AppendChar(c);
-            }
-
-            PSCredential creds = new PSCredential("administrator", sec);
             using (ManagerShell mgr = new ManagerShell())
+            using( var posh = mgr.GetPowerShell())
             {
-                var posh = mgr.GetPowerShell();
-                RefreshAdapters(posh);
+
+                var netModule = new NetModule(
+                    posh,
+                    "grunt"
+                    );
+
+                var netWait = netModule.Refresh(cw);
+
+                Task.WaitAll(new[] { netWait });
+
+                foreach (var f in netModule.NetworkAdapters)
+                {
+                    Console.WriteLine(f);
+                }
             }
         }
+        
+
 
         static void DumpMsg( String msg )
         {
             Console.WriteLine(msg);
-        }
-
-        static void DisplayErrors(PowerShell powerShell)
-        {
-            if (powerShell.HadErrors)
-            {
-                ConsoleColor prev = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                var errors = powerShell.Streams.Error.Select((m) =>
-                {
-                    if (null != m.Exception)
-                        return m.Exception.Message;
-                    else
-                        return "none";
-                });
-                foreach (var msg in errors)
-                {
-                    Console.WriteLine("ERROR: {0}", msg);
-                    Console.WriteLine();
-                }
-                Console.ForegroundColor = prev;
-                Console.WriteLine();
-            }
-        }
-
-        static void DisplayMessages(NetModule net)
-        {
-            foreach (var msg in net.VerboseMessages)
-            {
-                Console.WriteLine("VERBOSE: {0}", msg);
-            }
         }
 
         static void Meh()
@@ -130,30 +77,5 @@ namespace PoshManagerCli
             Console.WriteLine(r.ToString());
         }
 
-        static void Fizzy()
-        {
-            var interval = Observable.Interval(TimeSpan.FromMilliseconds(100));
-            var fizz = interval.Where((val) =>
-            {
-                var ret = ((val % 5 == 0) && !(val % 10 == 0));
-                return ret;
-            });
-            var buzz = interval.Where(val => val % 10 == 0);
-
-            interval.Subscribe(
-                x => Console.WriteLine("{0}", x),
-                () => Console.WriteLine("Complete"));
-
-            fizz.Subscribe(
-                x => Console.WriteLine("Fizz: {0}", x),
-                () => Console.WriteLine("Complete"));
-
-            buzz.Subscribe(
-                x => Console.WriteLine("Buzz: {0}", x),
-                () => Console.WriteLine("Complete"));
-
-
-            System.Threading.Thread.Sleep(5000);
-        }
     }
 }

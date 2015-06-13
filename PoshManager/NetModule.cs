@@ -55,7 +55,7 @@ namespace PoshManager
             ScriptPath = "scripts\\GetNicInfo.ps1";
         }
 
-        public Task Refresh(Action<String> msgOut = null)
+        public Task Refresh(IPoshStream stream)
         {
 
             Task t =
@@ -64,7 +64,7 @@ namespace PoshManager
                 Posh.AddCommand(ScriptPath)
                     .AddParameter("ComputerName", ComputerName);
 
-                var psoCollection = Invoke(msgOut);
+                var psoCollection = Invoke(stream);
 
                 _nics = psoCollection.Select(pso => pso.ImmediateBaseObject as NetworkAdapter);
 
