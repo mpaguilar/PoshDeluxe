@@ -46,36 +46,5 @@ namespace PoshManagerCli
                 }
             }
         }
-        
-
-
-        static void DumpMsg( String msg )
-        {
-            Console.WriteLine(msg);
-        }
-
-        static void Meh()
-        {
-            var posh = new NetModule(
-                    PowerShell.Create(),
-                    "vwin8"
-                   );
-            var p = posh.Posh;
-
-            p.AddStatement()
-                .AddScript(String.Format(". \"{0}\"", @"scripts\GetNicInfo.ps1"));
-
-
-            p.AddStatement()
-                .AddCommand("Get-NetworkAdapter")
-                .AddArgument("vwin8");
-
-
-
-            var r = p.Invoke<ManagementObject>();
-            // r[0].Properties["Caption"].Value
-            Console.WriteLine(r.ToString());
-        }
-
     }
 }
