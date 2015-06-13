@@ -20,7 +20,6 @@ using PoshManager;
 
 namespace PoshManagerCli
 {
-    using M = ConsoleWriter.MessageType;
     class Program
     {
         static void Main(string[] args)

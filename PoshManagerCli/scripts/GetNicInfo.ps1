@@ -95,6 +95,7 @@ Process {
 		)
 
 		Process {
+			write-verbose "Getting network settings for $ComputerName"
 			$network_adapters = Get-NetworkAdapter -ComputerName $ComputerName
 
 			$network_settings = Get-NetworkSettings -ComputerName $ComputerName 
@@ -113,6 +114,7 @@ Process {
 						SubnetMask = $mask
 					}
 					$adp.IPAddresses.Add($addy);
+					write-Debug "Found $($addy)"
 				}
 
 				$adp
