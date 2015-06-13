@@ -14,37 +14,24 @@ using Microsoft.PowerShell.Commands;
 using Microsoft.PowerShell.Commands.Management;
 using PowerShell = System.Management.Automation.PowerShell;
 
+
+
 using PoshManager;
 
 namespace PoshManagerCli
 {
+    using M = ConsoleWriter.MessageType;
     class Program
     {
         static void Main(string[] args)
         {
-            var pas = "password";
-            var sec = new System.Security.SecureString();
-            foreach( var c in pas.ToCharArray() ) {
-                sec.AppendChar(c);
-            }
+            var cw = new ConsoleWriter();
+            var vw = cw.Writer(M.Verbose);
 
-            PSCredential creds = new PSCredential("administrator", sec);
-            using (ManagerShell mgr = new ManagerShell())
-            {
-                var posh = mgr.GetPowerShell();
-                RefreshAdapters(posh);
-                
-            }
-
-
+            vw("let's find out");
         }
 
-        static void DumpMsg( String msg )
-        {
-            Console.WriteLine(msg);
-        }
-
-        static void RefreshAdapters(PowerShell powerShell )
+        static void RefreshAdapters(PowerShell powerShell)
         {
 
             var netModule = new NetModule(
@@ -54,15 +41,39 @@ namespace PoshManagerCli
 
             var netWait = netModule.Refresh(DumpMsg);
 
+
+
             Task.WaitAll(new[] { netWait });
 
             DisplayErrors(powerShell);
 
             var foo = netModule.NetworkAdapters;
-            foreach (var f in  foo)
+            foreach (var f in foo)
             {
                 Console.WriteLine(f);
             }
+        }
+
+        static void YetAnotherWorking()
+        {
+            var pas = "password";
+            var sec = new System.Security.SecureString();
+            foreach (var c in pas.ToCharArray())
+            {
+                sec.AppendChar(c);
+            }
+
+            PSCredential creds = new PSCredential("administrator", sec);
+            using (ManagerShell mgr = new ManagerShell())
+            {
+                var posh = mgr.GetPowerShell();
+                RefreshAdapters(posh);
+            }
+        }
+
+        static void DumpMsg( String msg )
+        {
+            Console.WriteLine(msg);
         }
 
         static void DisplayErrors(PowerShell powerShell)
