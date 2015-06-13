@@ -14,8 +14,6 @@ using Microsoft.PowerShell.Commands;
 using Microsoft.PowerShell.Commands.Management;
 using PowerShell = System.Management.Automation.PowerShell;
 
-
-
 using PoshManager;
 
 namespace PoshManagerCli
@@ -27,7 +25,7 @@ namespace PoshManagerCli
             var cw = new ConsoleWriter();
 
             using (ManagerShell mgr = new ManagerShell())
-            using( var posh = mgr.GetPowerShell())
+            using(var posh = mgr.GetPowerShell())
             {
 
                 var netModule = new NetModule(
