@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BasePoshModule.cs" />
     <Compile Include="DiskModule.cs" />
+    <Compile Include="IPoshModule.cs" />
     <Compile Include="IPoshStream.cs" />
     <Compile Include="ManagerShell.cs" />
     <Compile Include="NetModule.cs" />

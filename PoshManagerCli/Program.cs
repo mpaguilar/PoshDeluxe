@@ -56,5 +56,13 @@ namespace PoshManagerCli
                 }
             }
         }
+
+        static Action<Task> Refresher(IPoshModule module, String computerName)
+        {
+            return (writer) =>
+            {
+
+            };
+        }
     }
 }

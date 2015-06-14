@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace PoshManager
 {
-    public class DiskModule : BasePoshModule
+    public class DiskModule : BasePoshModule, IPoshModule
     {
         public class DiskDrive
         {
@@ -48,7 +48,7 @@ namespace PoshManager
         {
             return Task.Run(() =>
             {
-                Posh.AddCommand(ScriptPath)
+                Shell.AddCommand(ScriptPath)
                     .AddParameter("ComputerName", ComputerName);
 
                 var psoCollection = Invoke(stream);

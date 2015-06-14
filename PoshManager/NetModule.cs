@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 namespace PoshManager
 {
 
-    public class NetModule : BasePoshModule
+    public class NetModule : BasePoshModule, IPoshModule
     {
         public class NetworkAdapter
         {
@@ -62,7 +62,7 @@ namespace PoshManager
             Task t =
             Task.Run(() =>
             {
-                Posh.AddCommand(ScriptPath)
+                Shell.AddCommand(ScriptPath)
                     .AddParameter("ComputerName", ComputerName);
 
                 var psoCollection = Invoke(stream);

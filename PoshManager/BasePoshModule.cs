@@ -10,14 +10,14 @@ namespace PoshManager
 {
     public class BasePoshModule
     {
-        public readonly PowerShell Posh;
+        public readonly PowerShell Shell;
 
         public readonly String ComputerName;
         public readonly String ScriptPath;
 
         public void DotInclude(String script)
         {
-            Posh
+            Shell
                 .AddScript(String.Format(". \"{0}\"", script));
         }
 
@@ -26,36 +26,36 @@ namespace PoshManager
             String computerName,
             String scriptPath)
         {
-            Posh = powerShell;
+            Shell = powerShell;
             ComputerName = computerName;
             ScriptPath = scriptPath;
         }
 
         public void ClearMessages()
         {
-            Posh.Streams.ClearStreams();
+            Shell.Streams.ClearStreams();
         }
         public IEnumerable<String> VerboseMessages
         {
-            get { return Posh.Streams.Verbose.Select(msg => msg.Message); }
+            get { return Shell.Streams.Verbose.Select(msg => msg.Message); }
         }
         public IEnumerable<String> WarningMessages
         {
-            get { return Posh.Streams.Warning.Select(msg => msg.Message); }
+            get { return Shell.Streams.Warning.Select(msg => msg.Message); }
         }
 
         public IEnumerable<String> ErrorMessages
         {
-            get { return Posh.Streams.Error.Select(msg => msg.ErrorDetails.Message); }
+            get { return Shell.Streams.Error.Select(msg => msg.ErrorDetails.Message); }
         }
         public IEnumerable<String> DebugMessages
         {
-            get { return Posh.Streams.Debug.Select(msg => msg.Message); }
+            get { return Shell.Streams.Debug.Select(msg => msg.Message); }
         }
 
         public IEnumerable<String> GetPoshVariable(String variableName)
         {
-            var bar = Posh.Runspace.SessionStateProxy.GetVariable(variableName);
+            var bar = Shell.Runspace.SessionStateProxy.GetVariable(variableName);
 
             if (null != bar as object[])
             {
@@ -80,17 +80,17 @@ namespace PoshManager
         }
         public PSDataCollection<PSObject> Invoke(IPoshStream stream)
         {
-            var poshWait = Posh.BeginInvoke();
+            var poshWait = Shell.BeginInvoke();
             bool hasCounted = false;
             while (!poshWait.IsCompleted)
             {
                 // I'm not sure why I'm having to do this,
                 // but I only have to do it once
                 if (!hasCounted && (
-                    Posh.Streams.Verbose.Count > 0 ||
-                    Posh.Streams.Debug.Count > 0 ||
-                    Posh.Streams.Warning.Count > 0 ||
-                    Posh.Streams.Error.Count > 0) )
+                    Shell.Streams.Verbose.Count > 0 ||
+                    Shell.Streams.Debug.Count > 0 ||
+                    Shell.Streams.Warning.Count > 0 ||
+                    Shell.Streams.Error.Count > 0) )
                 {
                     hasCounted = true;
                 }
@@ -98,19 +98,19 @@ namespace PoshManager
                 if (hasCounted)
                 {
                     WriteMessages(VerboseMessages, stream.VerboseWriter);
-                    Posh.Streams.Verbose.Clear();
+                    Shell.Streams.Verbose.Clear();
 
                     WriteMessages(WarningMessages, stream.WarningWriter);
-                    Posh.Streams.Warning.Clear();
+                    Shell.Streams.Warning.Clear();
 
                     WriteMessages(DebugMessages, stream.DebugWriter);
-                    Posh.Streams.Debug.Clear();
+                    Shell.Streams.Debug.Clear();
 
                     WriteMessages(ErrorMessages, stream.ErrorWriter);
                 }
             }
 
-            var ret = Posh.EndInvoke(poshWait);
+            var ret = Shell.EndInvoke(poshWait);
 
             // any left?
             WriteMessages(VerboseMessages, stream.VerboseWriter);
@@ -123,7 +123,7 @@ namespace PoshManager
 
         public PSDataCollection<PSObject> Invoke(Action<String> msgOut)
         {
-            var poshWait = Posh.BeginInvoke();
+            var poshWait = Shell.BeginInvoke();
 
             if (null != msgOut)
             {
@@ -132,19 +132,19 @@ namespace PoshManager
                     // we don't want to clear the stream unless
                     // there's been something to process
                     // otherwise, messages are dropped.
-                    if (Posh.Streams.Verbose.Count > 0)
+                    if (Shell.Streams.Verbose.Count > 0)
                     {
                         foreach (var msg in VerboseMessages)
                             msgOut(msg);
 
-                        Posh.Streams.Verbose.Clear();
+                        Shell.Streams.Verbose.Clear();
                     }
                     // surrender the thread...
                     System.Threading.Thread.Sleep(1);
                 }
             }
 
-            return Posh.EndInvoke(poshWait);
+            return Shell.EndInvoke(poshWait);
         }
     }
 }
