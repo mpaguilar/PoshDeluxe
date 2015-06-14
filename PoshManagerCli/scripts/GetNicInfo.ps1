@@ -37,6 +37,7 @@ Process {
 						Description = $nic.Description
 					}
 				}
+			write-verbose "Completed getting network adapters from $ComputerName"
 		}
 	}
 
@@ -81,7 +82,7 @@ Process {
 			$nics = Get-WmiObject -ComputerName $ComputerName `
 				-Class Win32_NetworkAdapterConfiguration | 
 				select-object Index,Description,IPAddress,IPSubnet,IPEnabled,DefaultIPGateway
-			
+			write-Verbose "Completed getting network adapter settings from $ComputerName"
 			$nics
 		}
 	}
@@ -120,6 +121,7 @@ Process {
 
 				$adp
 			}
+			write-Verbose "Completed getting settings for $ComputerName"
 		}
 	}
 
