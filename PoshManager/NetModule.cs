@@ -49,10 +49,13 @@ namespace PoshManager
 
         public readonly String ScriptPath;
 
-        public NetModule(PowerShell powerShell, String computerName)
+        public NetModule(
+            PowerShell powerShell, 
+            String computerName,
+            String scriptPath = "scripts\\GetNicInfo.ps1")
             : base(powerShell, computerName)
         {
-            ScriptPath = "scripts\\GetNicInfo.ps1";
+            ScriptPath = scriptPath;
         }
 
         public Task Refresh(IPoshStream stream)

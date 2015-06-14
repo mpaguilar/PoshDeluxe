@@ -64,13 +64,15 @@ namespace PoshManager
                 "ForEach-Object",
                 "New-Object",
                 "Where-Object",
-//                "Invoke-Command",
-//                "Get-Item",
+                "Get-Item",
                 "Select-Object"
             });
 
             //MigrateVariables(cleanIss, defaultIss);
             cleanIss.Variables.Add(new SessionStateVariableEntry("VerbosePreference", "Continue", ""));
+            cleanIss.Variables.Add(new SessionStateVariableEntry("WarningPreference", "Continue", ""));
+            cleanIss.Variables.Add(new SessionStateVariableEntry("DebugPreference", "Continue", ""));
+            cleanIss.Variables.Add(new SessionStateVariableEntry("ErrorPreference", "Stop", ""));
 
             MigrateProviders(cleanIss, defaultIss, new String[] {
                 "Function",
@@ -85,8 +87,6 @@ namespace PoshManager
 
             //MigrateAssemblies(cleanIss, defaultIss);
             //MigrateFormats(cleanIss, defaultIss);
-
-
 
             return cleanIss;
 

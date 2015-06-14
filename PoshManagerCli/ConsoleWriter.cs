@@ -80,7 +80,7 @@ namespace PoshManagerCli
                     break;
 
                 case MessageType.Debug:
-                    ret = ColorWrapper(ConsoleColor.Gray, Formatter("{0}: DEBUG: {1}"));
+                    ret = ColorWrapper(ConsoleColor.Green, Formatter("{0}: DEBUG: {1}"));
                     break;
 
                 default:

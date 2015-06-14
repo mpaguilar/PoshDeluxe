@@ -103,6 +103,7 @@ Process {
 			$network_adapters |
 			foreach-Object {
 				$adp = $_ 
+				write-debug "Looking up $($adp.Description)"
 				$set = $network_settings  | where-Object  { $_.Index -eq $adp.Id }
 
 				for( $x = 0; $x -lt $set.IPAddress.Length; $x = $x + 1 )
@@ -122,6 +123,8 @@ Process {
 		}
 	}
 
+	$VerbosePreference = "Continue"
+	$DebugPreference = "Continue"
 	Get-CombinedNetSettings -ComputerName $ComputerName 
 
 }

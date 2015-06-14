@@ -39,6 +39,15 @@ namespace PoshManager
             get { return Posh.Streams.Warning.Select(msg => msg.Message); }
         }
 
+        public IEnumerable<String> ErrorMessages
+        {
+            get { return Posh.Streams.Error.Select(msg => msg.ErrorDetails.Message); }
+        }
+        public IEnumerable<String> DebugMessages
+        {
+            get { return Posh.Streams.Debug.Select(msg => msg.Message); }
+        }
+
         public IEnumerable<String> GetPoshVariable(String variableName)
         {
             var bar = Posh.Runspace.SessionStateProxy.GetVariable(variableName);
@@ -59,7 +68,6 @@ namespace PoshManager
         {
             var poshWait = Posh.BeginInvoke();
 
-
             while (!poshWait.IsCompleted)
             {
                 // we don't want to clear the stream unless
@@ -79,6 +87,28 @@ namespace PoshManager
                     {
                         stream.WarningWriter(msg);
                     }
+
+                    Posh.Streams.Warning.Clear();
+                }
+
+                if (Posh.Streams.Debug.Count > 0)
+                {
+                    foreach (var msg in DebugMessages)
+                    {
+                        stream.DebugWriter(msg);
+                    }
+
+                    Posh.Streams.Debug.Clear();
+                }
+
+                if (Posh.Streams.Error.Count > 0)
+                {
+                    foreach (var msg in ErrorMessages)
+                    {
+                        stream.ErrorWriter(msg);
+                    }
+
+                    // Posh.Streams.Error.Clear();
                 }
                 // surrender the thread...
                 System.Threading.Thread.Sleep(1);
