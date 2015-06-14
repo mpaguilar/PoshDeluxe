@@ -65,27 +65,36 @@ namespace PoshManagerCli
         public Action<String> Writer(MessageType t, String format = null)
         {
             Action<String> ret = null;
-            switch (t)
+
+            if (null != format)
             {
-                case MessageType.Verbose:
-                    ret = ColorWrapper(ConsoleColor.Cyan, Formatter("{0}: VERBOSE: {1}"));
-                    break;
+                ret = ColorWrapper(Console.ForegroundColor, Formatter(format));
+            }
+            else
+            {
 
-                case MessageType.Error:
-                    ret = ColorWrapper(ConsoleColor.Red, Formatter("{0}: ERROR: {1}"));
-                    break;
+                switch (t)
+                {
+                    case MessageType.Verbose:
+                        ret = ColorWrapper(ConsoleColor.Cyan, Formatter("{0}: VERBOSE: {1}"));
+                        break;
 
-                case MessageType.Warning:
-                    ret = ColorWrapper(ConsoleColor.Yellow, Formatter("{0}: WARNING: {1}"));
-                    break;
+                    case MessageType.Error:
+                        ret = ColorWrapper(ConsoleColor.Red, Formatter("{0}: ERROR: {1}"));
+                        break;
 
-                case MessageType.Debug:
-                    ret = ColorWrapper(ConsoleColor.Green, Formatter("{0}: DEBUG: {1}"));
-                    break;
+                    case MessageType.Warning:
+                        ret = ColorWrapper(ConsoleColor.Yellow, Formatter("{0}: WARNING: {1}"));
+                        break;
 
-                default:
-                    ret = ColorWrapper(Console.ForegroundColor, Formatter("{0}: {1}"));
-                    break;
+                    case MessageType.Debug:
+                        ret = ColorWrapper(ConsoleColor.Green, Formatter("{0}: DEBUG: {1}"));
+                        break;
+
+                    default:
+                        ret = ColorWrapper(Console.ForegroundColor, Formatter("{0}: {1}"));
+                        break;
+                }
             }
 
             return ret;

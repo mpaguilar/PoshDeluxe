@@ -63,58 +63,54 @@ namespace PoshManager
 
             return new String[0];
         }
-
+        public void WriteMessages(IEnumerable<String> messages, Action<String> writer)
+        {
+            foreach (var msg in messages)
+            {
+                writer(msg);
+            }
+        }
         public PSDataCollection<PSObject> Invoke(IPoshStream stream)
         {
             var poshWait = Posh.BeginInvoke();
-
+            bool hasCounted = false;
             while (!poshWait.IsCompleted)
             {
-                // we don't want to clear the stream unless
-                // there's been something to process
-                // otherwise, messages are dropped.
-                if (Posh.Streams.Verbose.Count > 0)
+                // I'm not sure why I'm having to do this,
+                // but if I don't get the count right off the stream things
+                // don't work as well.
+                if (!hasCounted && (
+                    Posh.Streams.Verbose.Count > 0 ||
+                    Posh.Streams.Debug.Count > 0 ||
+                    Posh.Streams.Warning.Count > 0 ||
+                    Posh.Streams.Error.Count > 0) )
                 {
-                    foreach (var msg in VerboseMessages)
-                        stream.VerboseWriter(msg);
+                    hasCounted = true;
+                }
 
+                if (hasCounted)
+                {
+                    WriteMessages(VerboseMessages, stream.VerboseWriter);
                     Posh.Streams.Verbose.Clear();
-                }
 
-                if(Posh.Streams.Warning.Count > 0 )
-                {
-                    foreach( var msg in WarningMessages )
-                    {
-                        stream.WarningWriter(msg);
-                    }
-
+                    WriteMessages(WarningMessages, stream.WarningWriter);
                     Posh.Streams.Warning.Clear();
-                }
 
-                if (Posh.Streams.Debug.Count > 0)
-                {
-                    foreach (var msg in DebugMessages)
-                    {
-                        stream.DebugWriter(msg);
-                    }
-
+                    WriteMessages(DebugMessages, stream.DebugWriter);
                     Posh.Streams.Debug.Clear();
-                }
 
-                if (Posh.Streams.Error.Count > 0)
-                {
-                    foreach (var msg in ErrorMessages)
-                    {
-                        stream.ErrorWriter(msg);
-                    }
-
-                    // Posh.Streams.Error.Clear();
+                    WriteMessages(ErrorMessages, stream.ErrorWriter);
                 }
-                // surrender the thread...
-                System.Threading.Thread.Sleep(1);
             }
 
-            return Posh.EndInvoke(poshWait);
+            var ret = Posh.EndInvoke(poshWait);
+
+            WriteMessages(VerboseMessages, stream.VerboseWriter);
+            WriteMessages(WarningMessages, stream.WarningWriter);
+            WriteMessages(DebugMessages, stream.DebugWriter);
+            WriteMessages(ErrorMessages, stream.ErrorWriter);
+
+            return ret;
         }
 
         public PSDataCollection<PSObject> Invoke(Action<String> msgOut)
