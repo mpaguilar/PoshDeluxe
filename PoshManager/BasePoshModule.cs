@@ -80,8 +80,7 @@ namespace PoshManager
             while (!poshWait.IsCompleted)
             {
                 // I'm not sure why I'm having to do this,
-                // but if I don't get the count right off the stream things
-                // don't work as well.
+                // but I only have to do it once
                 if (!hasCounted && (
                     Posh.Streams.Verbose.Count > 0 ||
                     Posh.Streams.Debug.Count > 0 ||
@@ -108,6 +107,7 @@ namespace PoshManager
 
             var ret = Posh.EndInvoke(poshWait);
 
+            // any left?
             WriteMessages(VerboseMessages, stream.VerboseWriter);
             WriteMessages(WarningMessages, stream.WarningWriter);
             WriteMessages(DebugMessages, stream.DebugWriter);

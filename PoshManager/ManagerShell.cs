@@ -15,11 +15,11 @@ namespace PoshManager
 {
     public class ManagerShell : IDisposable
     {
-        Runspace Runspace;
+        RunspacePool Runspace;
 
         public ManagerShell()
         {
-            this.Runspace = RunspaceFactory.CreateRunspace(
+            this.Runspace = RunspaceFactory.CreateRunspacePool(
                 GetInitialSessionState());
             this.Runspace.Open();
         }
@@ -37,7 +37,7 @@ namespace PoshManager
         public PowerShell GetPowerShell()
         {
             var ret = PowerShell.Create();
-            ret.Runspace = this.Runspace;
+            ret.RunspacePool = this.Runspace;
             return ret;
         }
 
