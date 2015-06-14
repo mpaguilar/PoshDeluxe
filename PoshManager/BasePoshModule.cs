@@ -65,6 +65,9 @@ namespace PoshManager
         }
         public void WriteMessages(IEnumerable<String> messages, Action<String> writer)
         {
+            // TODO: fix this
+            // the problem with this approach is that not all the messages
+            // will not be properly interleaved
             foreach (var msg in messages)
             {
                 writer(msg);
