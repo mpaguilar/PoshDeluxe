@@ -47,15 +47,13 @@ namespace PoshManager
             get { return _nics; }
         }
 
-        public readonly String ScriptPath;
-
         public NetModule(
             PowerShell powerShell, 
             String computerName,
             String scriptPath = "scripts\\GetNicInfo.ps1")
-            : base(powerShell, computerName)
+            : base(powerShell, computerName, scriptPath)
         {
-            ScriptPath = scriptPath;
+ 
         }
 
         public Task Refresh(IPoshStream stream)
@@ -69,7 +67,8 @@ namespace PoshManager
 
                 var psoCollection = Invoke(stream);
 
-                _nics = psoCollection.Select(pso => pso.ImmediateBaseObject as NetworkAdapter);
+                _nics = psoCollection.Select(
+                    pso => pso.ImmediateBaseObject as NetworkAdapter);
 
             });
 

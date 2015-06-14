@@ -23,23 +23,36 @@ namespace PoshManagerCli
         static void Main(string[] args)
         {
             var cw = new ConsoleWriter();
+            var computerName = "grunt";
 
             using (ManagerShell mgr = new ManagerShell())
-            using(var posh = mgr.GetPowerShell())
+            using(var netPosh = mgr.GetPowerShell())
+            using(var diskPosh = mgr.GetPowerShell())
             {
 
                 var netModule = new NetModule(
-                    posh,
-                    "grunt"
+                    netPosh,
+                    computerName
                     );
 
-                var netWait = netModule.Refresh(cw);
+                var diskModule = new DiskModule(
+                    diskPosh,
+                    computerName
+                    );
 
-                Task.WaitAll(new[] { netWait });
+                var netWait = netModule.Refresh(new ConsoleWriter());
+                var diskWait = diskModule.Refresh(new ConsoleWriter());
+
+                Task.WaitAll(new[] { netWait, diskWait });
 
                 foreach (var f in netModule.NetworkAdapters)
                 {
                     Console.WriteLine(f);
+                }
+
+                foreach ( var d in diskModule.DiskDrives )
+                {
+                    Console.WriteLine(d);
                 }
             }
         }

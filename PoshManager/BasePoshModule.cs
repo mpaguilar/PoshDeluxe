@@ -13,6 +13,7 @@ namespace PoshManager
         public readonly PowerShell Posh;
 
         public readonly String ComputerName;
+        public readonly String ScriptPath;
 
         public void DotInclude(String script)
         {
@@ -20,10 +21,14 @@ namespace PoshManager
                 .AddScript(String.Format(". \"{0}\"", script));
         }
 
-        public BasePoshModule(PowerShell powerShell, String computerName)
+        public BasePoshModule(
+            PowerShell powerShell, 
+            String computerName,
+            String scriptPath)
         {
             Posh = powerShell;
             ComputerName = computerName;
+            ScriptPath = scriptPath;
         }
 
         public void ClearMessages()

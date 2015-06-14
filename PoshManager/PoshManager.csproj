@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePoshModule.cs" />
+    <Compile Include="DiskModule.cs" />
     <Compile Include="IPoshStream.cs" />
     <Compile Include="ManagerShell.cs" />
     <Compile Include="NetModule.cs" />
@@ -51,6 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="scripts\GetDiskInfo.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="scripts\GetNicInfo.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
