@@ -25,6 +25,7 @@ namespace PoshManagerCli
             var cw = new ConsoleWriter();
             var computerName = "grunt";
 
+
             using (ManagerShell mgr = new ManagerShell())
             {
 
@@ -50,25 +51,6 @@ namespace PoshManagerCli
             }
         }
 
-
-
-        // for future use, perhaps. Just thought it was neat.
-        static Func<PowerShell, IPoshModule> Module(Type moduleType)
-        {
-            var ctor = moduleType.GetConstructor(new[] { typeof(PowerShell) });
-
-            if (null == ctor)
-            {
-                throw (new ArgumentException("Constructor not found"));
-            }
-            
-            return (shell) =>
-            {
-                return (IPoshModule)ctor.Invoke(
-                    new object[] {shell});
-            };
-        }
-
         static Func<IPoshStream, Task> Refresher(IPoshModule module)
         {
             return (writer) =>
@@ -76,5 +58,18 @@ namespace PoshManagerCli
                 return module.Refresh(writer);
             };
         }
+
+        // for future use.
+        static IPoshModule Module(PowerShell shell, Type moduleType)
+        {
+            var ctor = moduleType.GetConstructor(new[] { typeof(PowerShell) });
+
+            if (null == ctor)
+            {
+                throw (new ArgumentException("Constructor not found"));
+            }
+
+            return (IPoshModule)ctor.Invoke(
+                new object[] {shell});
     }
 }
