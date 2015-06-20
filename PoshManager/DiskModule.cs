@@ -56,12 +56,6 @@ namespace PoshManager
             )
             : base(null, _scriptPath) { }
 
-        public DiskModule()
-        : base(null,_computerName,_scriptPath)
-        {
-            throw new Exception("For testing only");
-        }
-
         public Task Refresh(IPoshStream stream)
         {
             return Task.Run(() =>

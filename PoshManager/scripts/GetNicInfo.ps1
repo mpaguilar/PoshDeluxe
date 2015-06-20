@@ -13,7 +13,7 @@ Add-Type -Path "C:\users\michael\Documents\Visual Studio 2013\Projects\RxPlaygro
 }
 
 Process {
-	# returns IP Enabled network adapters.
+	# returns PoshManager.NetModule+NetworkAdapter
 	function Get-NetworkAdapter
 	{
 		Param (
@@ -41,6 +41,7 @@ Process {
 		}
 	}
 
+	# returns PoshManager.NetModule+PersistentRoute
 	function Get-PersistentRoutes
 	{
 		Param (
@@ -67,6 +68,7 @@ Process {
 		}
 	}
 
+	# returns raw WMI, is used by NetModule+IPAddress
 	function Get-NetworkSettings
 	{
 		Param(
@@ -87,6 +89,7 @@ Process {
 		}
 	}
 
+	# returns PoshManager.NetModule+IPAddress
 	function Get-CombinedNetSettings 
 	{
 		Param(

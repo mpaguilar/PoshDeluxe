@@ -69,12 +69,14 @@ namespace PoshManager
         {
             var bar = Shell.Runspace.SessionStateProxy.GetVariable(variableName);
 
+            // lists are objects
             if (null != bar as object[])
             {
                 var foo = bar as object[];
                 return new List<String>(foo.Select(o => o.ToString()));
             }
 
+            // while single results are strings
             if (null != bar as String)
                 return new List<String>(new[] { bar as String });
 
@@ -83,13 +85,17 @@ namespace PoshManager
         public void WriteMessages(IEnumerable<String> messages, Action<String> writer)
         {
             // TODO: fix this
-            // the problem with this approach is that not all the messages
+            // the problem with this approach is that the messages
             // will not be properly interleaved
             foreach (var msg in messages)
             {
                 writer(msg);
             }
         }
+
+        // this does most of the work
+        // fires off the command task async and
+        // spits out the messages as they come
         public PSDataCollection<PSObject> Invoke(IPoshStream stream)
         {
             var poshWait = Shell.BeginInvoke();

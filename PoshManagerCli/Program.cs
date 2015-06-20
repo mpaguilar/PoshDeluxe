@@ -38,11 +38,6 @@ namespace PoshManagerCli
                     computerName
                     );
 
-
-                Func<IPoshModule, PowerShell> posh = (mod) => {
-                    return mgr.GetPowerShell();
-                };
-                
                 var netWait = Refresher(netModule)(new ConsoleWriter());
                 var diskWait = Refresher(diskModule)(new ConsoleWriter());
 
@@ -55,14 +50,9 @@ namespace PoshManagerCli
             }
         }
 
-        static Func<Type,IPoshModule> DiskModule(String computerName)
-        {
-            return (moduleType) =>
-            {
-                return new DiskModule(computerName);
-            };
-        }
 
+
+        // for future use, perhaps. Just thought it was neat.
         static Func<PowerShell, IPoshModule> Module(Type moduleType)
         {
             var ctor = moduleType.GetConstructor(new[] { typeof(PowerShell) });

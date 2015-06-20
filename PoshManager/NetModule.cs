@@ -31,7 +31,7 @@ namespace PoshManager
 
         public class IPAddress
         {
-
+            // using strings is lazy...so I'm lazy
             public String Address = String.Empty;
             public String SubnetMask = String.Empty;
 
@@ -56,7 +56,6 @@ namespace PoshManager
         {
  
         }
-
 
         ~NetModule()
         {
