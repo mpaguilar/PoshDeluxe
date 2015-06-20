@@ -54,8 +54,6 @@ Process {
 	$VerbosePreference = "Continue"
 	$DebugPreference = "Continue"
 
-    # Get-PhysicalDisks -ComputerName $ComputerName | 
-    #    Select-Object Caption, Name, Model, MediaType, Index, DeviceID, Description, Size
 	write-Verbose "Getting disk information from $ComputerName"
     Get-Disks -ComputerName $ComputerName |
 	foreach-Object {

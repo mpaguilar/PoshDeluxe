@@ -12,6 +12,7 @@ namespace PoshManager
 {
     public class DiskModule : BasePoshModule, IPoshModule
     {
+        public const String _scriptPath = "scripts\\GetDiskInfo.ps1";
         public class DiskDrive
         {
             public String DeviceID = String.Empty;
@@ -37,18 +38,35 @@ namespace PoshManager
 
         public DiskModule( 
             PowerShell powerShell,
-            String computerName,
-            String scriptPath = "scripts\\GetDiskInfo.ps1")
-            : base(powerShell, computerName, scriptPath)
+            String computerName)
+            : base(powerShell, computerName, _scriptPath)
         {
 
+        }
+
+        public DiskModule(
+            PowerShell powerShell ) :
+            base(powerShell, _scriptPath)
+        {
+
+        }
+
+        public DiskModule(
+            String computerName
+            )
+            : base(null, _scriptPath) { }
+
+        public DiskModule()
+        : base(null,_computerName,_scriptPath)
+        {
+            throw new Exception("For testing only");
         }
 
         public Task Refresh(IPoshStream stream)
         {
             return Task.Run(() =>
             {
-                Shell.AddCommand(ScriptPath)
+                Shell.AddCommand(_scriptPath)
                     .AddParameter("ComputerName", ComputerName);
 
                 var psoCollection = Invoke(stream);

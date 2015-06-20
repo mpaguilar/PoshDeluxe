@@ -26,22 +26,25 @@ namespace PoshManagerCli
             var computerName = "grunt";
 
             using (ManagerShell mgr = new ManagerShell())
-            using(var netPosh = mgr.GetPowerShell())
-            using(var diskPosh = mgr.GetPowerShell())
             {
 
                 var netModule = new NetModule(
-                    netPosh,
+                    mgr.GetPowerShell(),
                     computerName
                     );
 
                 var diskModule = new DiskModule(
-                    diskPosh,
+                    mgr.GetPowerShell(),
                     computerName
                     );
 
-                var netWait = netModule.Refresh(new ConsoleWriter());
-                var diskWait = diskModule.Refresh(new ConsoleWriter());
+
+                Func<IPoshModule, PowerShell> posh = (mod) => {
+                    return mgr.GetPowerShell();
+                };
+                
+                var netWait = Refresher(netModule)(new ConsoleWriter());
+                var diskWait = Refresher(diskModule)(new ConsoleWriter());
 
                 Task.WaitAll(new[] { netWait, diskWait });
 
@@ -49,19 +52,38 @@ namespace PoshManagerCli
                 {
                     Console.WriteLine(f);
                 }
-
-                foreach ( var d in diskModule.DiskDrives )
-                {
-                    Console.WriteLine(d);
-                }
             }
         }
 
-        static Action<Task> Refresher(IPoshModule module, String computerName)
+        static Func<Type,IPoshModule> DiskModule(String computerName)
+        {
+            return (moduleType) =>
+            {
+                return new DiskModule(computerName);
+            };
+        }
+
+        static Func<PowerShell, IPoshModule> Module(Type moduleType)
+        {
+            var ctor = moduleType.GetConstructor(new[] { typeof(PowerShell) });
+
+            if (null == ctor)
+            {
+                throw (new ArgumentException("Constructor not found"));
+            }
+            
+            return (shell) =>
+            {
+                return (IPoshModule)ctor.Invoke(
+                    new object[] {shell});
+            };
+        }
+
+        static Func<IPoshStream, Task> Refresher(IPoshModule module)
         {
             return (writer) =>
             {
-
+                return module.Refresh(writer);
             };
         }
     }

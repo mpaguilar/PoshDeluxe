@@ -24,14 +24,35 @@ namespace PoshManager
             this.Runspace.Open();
         }
 
+        private bool isDisposed = false;
         public void Dispose()
         {
-            if (null != this.Runspace)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+
+        }
+
+        protected virtual void Dispose( bool disposing )
+        {
+            if (isDisposed)
+                return;
+
+            if (disposing)
             {
-                this.Runspace.Close();
-                this.Runspace.Dispose();
-                this.Runspace = null;
+                if (null != this.Runspace)
+                {
+                    this.Runspace.Close();
+                    this.Runspace.Dispose();
+                    this.Runspace = null;
+                }
             }
+
+            isDisposed = true;
+        }
+
+        ~ManagerShell()
+        {
+            Dispose(false);
         }
 
         public PowerShell GetPowerShell()
@@ -48,8 +69,7 @@ namespace PoshManager
 
             cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
 
-            //SessionStateTypeEntry meh = new SessionStateTypeEntry()
-
+            // TODO: create the objects, rather than copying
             MigrateCommands(cleanIss, defaultIss, new[] {
                 // "*" gets two functions 
                 // one of them does dot-sourcing
@@ -68,11 +88,11 @@ namespace PoshManager
                 "Select-Object"
             });
 
-            //MigrateVariables(cleanIss, defaultIss);
-            cleanIss.Variables.Add(new SessionStateVariableEntry("VerbosePreference", "Continue", ""));
-            cleanIss.Variables.Add(new SessionStateVariableEntry("WarningPreference", "Continue", ""));
-            cleanIss.Variables.Add(new SessionStateVariableEntry("DebugPreference", "Continue", ""));
-            cleanIss.Variables.Add(new SessionStateVariableEntry("ErrorPreference", "Stop", ""));
+            // Some output defaults.
+            AddVariable(cleanIss, "VerbosePreference", "Continue");
+            AddVariable(cleanIss, "WarningPreference", "Continue");
+            AddVariable(cleanIss, "DebugPreference", "Continue");
+            AddVariable(cleanIss, "ErrorPreference", "Stop");
 
             MigrateProviders(cleanIss, defaultIss, new String[] {
                 "Function",
@@ -82,7 +102,7 @@ namespace PoshManager
 //                "WSMan",
 //                "Certificate",
 //                "Registry",
-                "FileSystem"
+                "FileSystem" // for dot sourcing
             });
 
             //MigrateAssemblies(cleanIss, defaultIss);
@@ -92,31 +112,29 @@ namespace PoshManager
 
         }
 
-        static void MigrateAssemblies(InitialSessionState clean,
-    InitialSessionState source)
+        static void AddVariable( InitialSessionState sessionState, String variableName, String value )
         {
+            sessionState.Variables.Add(new SessionStateVariableEntry(variableName, value, ""));
+        }
 
-            foreach (var a in source.Assemblies)
-            {
-                clean.Assemblies.Add(a);
-            }
+        // yes, this is a terrible way to do it.
+        // either 
+        static void MigrateAssemblies(InitialSessionState clean,
+            InitialSessionState source)
+        {
+            clean.Assemblies.Add(source.Assemblies.Clone());
         }
 
         static void MigrateFormats(InitialSessionState clean,
             InitialSessionState source)
         {
-
-            foreach (var f in source.Formats)
-            {
-                clean.Formats.Add(f);
-            }
-
+            clean.Formats.Add(source.Formats.Clone());
         }
         static void MigrateProviders(InitialSessionState clean,
             InitialSessionState source,
             String[] providers = null)
         {
-
+            // this one blows up if you aren't careful
             foreach (var p in source.Providers)
             {
                 if (null == providers || providers.Contains(p.Name))
@@ -127,23 +145,20 @@ namespace PoshManager
         static void MigrateVariables(InitialSessionState clean,
             InitialSessionState source)
         {
-            foreach (var svar in source.Variables)
-            {
-                clean.Variables.Add(svar);
-            }
+            clean.Variables.Add(source.Variables.Clone());
         }
 
         static void MigrateCommands(InitialSessionState clean,
             InitialSessionState source,
             String[] commands)
         {
-
             foreach (var cmd in commands)
             {
                 var check_cmd = clean.Commands.Where(c => c.Name == cmd);
                 if (0 < check_cmd.Count())
                 {
                     var msg = String.Format("Command already in session state: {0}", cmd);
+                    // TODO: Better error handling
                     Console.WriteLine(msg);
                 }
 

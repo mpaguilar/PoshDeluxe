@@ -8,11 +8,12 @@ using System.Management.Automation;
 
 namespace PoshManager
 {
-    public class BasePoshModule
+    public class BasePoshModule : IDisposable
     {
+        protected const String _computerName = "localhost";
         public readonly PowerShell Shell;
 
-        public readonly String ComputerName;
+        public String ComputerName { get; protected set; }
         public readonly String ScriptPath;
 
         public void DotInclude(String script)
@@ -29,6 +30,16 @@ namespace PoshManager
             Shell = powerShell;
             ComputerName = computerName;
             ScriptPath = scriptPath;
+        }
+
+        public BasePoshModule(
+            PowerShell powerShell,
+            String scriptPath
+            )
+        {
+            Shell = powerShell;
+            ScriptPath = scriptPath;
+            ComputerName = _computerName;
         }
 
         public void ClearMessages()
@@ -53,6 +64,7 @@ namespace PoshManager
             get { return Shell.Streams.Debug.Select(msg => msg.Message); }
         }
 
+        // even more stuff can be pulled from global variables
         public IEnumerable<String> GetPoshVariable(String variableName)
         {
             var bar = Shell.Runspace.SessionStateProxy.GetVariable(variableName);
@@ -121,30 +133,28 @@ namespace PoshManager
             return ret;
         }
 
-        public PSDataCollection<PSObject> Invoke(Action<String> msgOut)
+        private bool isDisposed = false;
+        public void Dispose()
         {
-            var poshWait = Shell.BeginInvoke();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            if (null != msgOut)
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+
+            if (disposing)
             {
-                while (!poshWait.IsCompleted)
-                {
-                    // we don't want to clear the stream unless
-                    // there's been something to process
-                    // otherwise, messages are dropped.
-                    if (Shell.Streams.Verbose.Count > 0)
-                    {
-                        foreach (var msg in VerboseMessages)
-                            msgOut(msg);
-
-                        Shell.Streams.Verbose.Clear();
-                    }
-                    // surrender the thread...
-                    System.Threading.Thread.Sleep(1);
-                }
+                Shell.Dispose();
             }
+            isDisposed = true;
+        }
 
-            return Shell.EndInvoke(poshWait);
+        ~BasePoshModule()
+        {
+            Dispose(false);
         }
     }
 }
