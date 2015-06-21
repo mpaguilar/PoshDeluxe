@@ -87,6 +87,7 @@ namespace PoshManager
             // TODO: fix this
             // the problem with this approach is that the messages
             // will not be properly interleaved
+
             foreach (var msg in messages)
             {
                 writer(msg);
@@ -124,6 +125,8 @@ namespace PoshManager
                     WriteMessages(DebugMessages, stream.DebugWriter);
                     Shell.Streams.Debug.Clear();
 
+                    // the default is to Stop
+                    // TODO: this will spew dupes if ErrorPreference is not Stop
                     WriteMessages(ErrorMessages, stream.ErrorWriter);
                 }
             }

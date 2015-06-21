@@ -8,9 +8,9 @@ namespace PoshManager
 {
     public interface IPoshStream
     {
-        Action<String> VerboseWriter { get; set; }
-        Action<String> DebugWriter { get; set; }
-        Action<String> WarningWriter { get; set; }
-        Action<String> ErrorWriter { get; set; }
+        Action<String> VerboseWriter { get;  }
+        Action<String> DebugWriter { get;  }
+        Action<String> WarningWriter { get; }
+        Action<String> ErrorWriter { get; }
     }
 }

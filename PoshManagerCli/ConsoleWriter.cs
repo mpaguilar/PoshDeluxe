@@ -72,7 +72,6 @@ namespace PoshManagerCli
             }
             else
             {
-
                 switch (t)
                 {
                     case MessageType.Verbose:

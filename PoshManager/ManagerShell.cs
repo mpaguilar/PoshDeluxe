@@ -29,7 +29,6 @@ namespace PoshManager
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-
         }
 
         protected virtual void Dispose( bool disposing )
@@ -67,9 +66,15 @@ namespace PoshManager
             InitialSessionState defaultIss = InitialSessionState.CreateDefault();
             InitialSessionState cleanIss = InitialSessionState.Create();
 
+            // this isn't restrictive.
+            // this isn't restrictive at all!
             cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
 
+            // Disable execution policy
+            cleanIss.AuthorizationManager = new AuthorizationManager("dummy"); 
+
             // TODO: create the objects, rather than copying
+            // is there something wrong with copying?
             MigrateCommands(cleanIss, defaultIss, new[] {
                 // "*" gets two functions 
                 // one of them does dot-sourcing
@@ -130,6 +135,7 @@ namespace PoshManager
         {
             clean.Formats.Add(source.Formats.Clone());
         }
+
         static void MigrateProviders(InitialSessionState clean,
             InitialSessionState source,
             String[] providers = null)

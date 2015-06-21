@@ -53,6 +53,7 @@ namespace PoshManagerCli
 
         static Func<IPoshStream, Task> Refresher(IPoshModule module)
         {
+            // getting to and using the inside Task from BasePoshModule is kind of a pain
             return (writer) =>
             {
                 return module.Refresh(writer);
@@ -70,6 +71,7 @@ namespace PoshManagerCli
             }
 
             return (IPoshModule)ctor.Invoke(
-                new object[] {shell});
+                new object[] { shell });
+        }
     }
 }
