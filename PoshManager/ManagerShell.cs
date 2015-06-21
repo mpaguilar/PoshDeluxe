@@ -70,6 +70,8 @@ namespace PoshManager
             // this isn't restrictive at all!
             cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
 
+            
+
             // Disable execution policy
             cleanIss.AuthorizationManager = new AuthorizationManager("dummy"); 
 

@@ -7,7 +7,7 @@
 
 Begin {
 
-Add-Type -Path "C:\users\michael\Documents\Visual Studio 2013\Projects\RxPlayground\PoshManagerCli\bin\debug\PoshManager.dll"
+Add-Type -Path "PoshManager.dll"
 
 }
 

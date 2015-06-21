@@ -30,12 +30,17 @@ namespace PoshManager
             Shell = powerShell;
             ComputerName = computerName;
             ScriptPath = scriptPath;
+
+            var env = Environment.CurrentDirectory;
+
+
+            
         }
 
         public BasePoshModule(
             PowerShell powerShell,
             String scriptPath
-            )
+            ): this(powerShell, _computerName, scriptPath )
         {
             Shell = powerShell;
             ScriptPath = scriptPath;
@@ -130,7 +135,7 @@ namespace PoshManager
                     WriteMessages(ErrorMessages, stream.ErrorWriter);
                 }
             }
-
+            
             var ret = Shell.EndInvoke(poshWait);
 
             // any left?
