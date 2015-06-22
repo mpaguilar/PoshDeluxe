@@ -29,6 +29,8 @@ namespace PoshManagerGui
             InitializeComponent();
         }
 
+        public MessageOutput messageOutput;
+
         public class PmGuiWriter : IPoshStream
         {
             public class PoshMessage
@@ -109,7 +111,10 @@ namespace PoshManagerGui
         {
             
             var writer = new PmGuiWriter();
-            listMessages.ItemsSource = writer.Messages;
+
+            var msgOut = new MessageOutput();
+            msgOut.listMessages.ItemsSource = writer.Messages;            
+            msgOut.Show();
 
             var computerName = txtComputerName.Text;
             using (ManagerShell mgr = new ManagerShell())
@@ -128,13 +133,10 @@ namespace PoshManagerGui
                 var diskWait = diskModule.Refresh(writer);
 
                 Task.WaitAll(new[] { netWait, diskWait });
-
                 
                 listNetworkAdapters.ItemsSource = netModule.NetworkAdapters;
                 listDisks.ItemsSource = diskModule.DiskDrives;
             }
-
-            
         }
     }
 }

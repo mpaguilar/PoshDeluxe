@@ -1,21 +1,10 @@
 ﻿<Window x:Class="PoshManagerGui.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="512" Width="531">
+        Title="MainWindow" Height="306" Width="531">
     <Grid>
         <Button x:Name="btnRefresh" Content="Refresh" HorizontalAlignment="Left" Margin="10,249,0,0" VerticalAlignment="Top" Width="75" Click="btnRefresh_Click"/>
         <TextBox x:Name="txtComputerName" HorizontalAlignment="Left" Height="23" Margin="10,20,0,0" TextWrapping="Wrap" Text="Computer Name" VerticalAlignment="Top" Width="120"/>
-        <ListView x:Name="listMessages" HorizontalAlignment="Left" Height="196" Margin="13,274,0,0" VerticalAlignment="Top" Width="500">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <WrapPanel>
-                        <TextBlock Text="Message: "/>
-                        <TextBlock Text="{Binding Message}" Foreground="{Binding MessageColor}">
-                        </TextBlock>
-                    </WrapPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
         <ListView x:Name="listNetworkAdapters" HorizontalAlignment="Left" Height="191" Margin="12,53,0,0" VerticalAlignment="Top" Width="228">
             <ListView.View>
                 <GridView>

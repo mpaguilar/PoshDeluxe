@@ -12,7 +12,7 @@ namespace PoshManager
 {
 
     public class NetModule 
-        : BasePoshModule, IPoshModule, IDisposable
+        : BasePoshModule, IPoshModule
     {
         public class NetworkAdapter
         {
@@ -54,11 +54,6 @@ namespace PoshManager
             : base(powerShell, computerName, scriptPath)
         {
             
-        }
-
-        ~NetModule()
-        {
-            Dispose();
         }
 
         public Task Refresh(IPoshStream stream)
