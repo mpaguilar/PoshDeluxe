@@ -107,9 +107,9 @@ namespace PoshManagerGui
         
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            listMessages.ItemsSource = null;
+            
             var writer = new PmGuiWriter();
-
+            listMessages.ItemsSource = writer.Messages;
 
             var computerName = txtComputerName.Text;
             using (ManagerShell mgr = new ManagerShell())
@@ -128,9 +128,13 @@ namespace PoshManagerGui
                 var diskWait = diskModule.Refresh(writer);
 
                 Task.WaitAll(new[] { netWait, diskWait });
+
+                
+                listNetworkAdapters.ItemsSource = netModule.NetworkAdapters;
+                listDisks.ItemsSource = diskModule.DiskDrives;
             }
 
-            listMessages.ItemsSource = writer.Messages;           
+            
         }
     }
 }
