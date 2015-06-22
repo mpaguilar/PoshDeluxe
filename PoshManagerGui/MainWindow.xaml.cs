@@ -66,7 +66,7 @@ namespace PoshManagerGui
         
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            var computerName = "grunt";
+            var computerName = txtComputerName.Text;
             using (ManagerShell mgr = new ManagerShell())
             {
                 var netModule = new NetModule(

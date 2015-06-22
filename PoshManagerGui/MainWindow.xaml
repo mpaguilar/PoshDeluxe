@@ -5,7 +5,7 @@
     <Grid>
         <Button x:Name="btnRefresh" Content="Refresh" HorizontalAlignment="Left" Margin="10,215,0,0" VerticalAlignment="Top" Width="75" Click="btnRefresh_Click"/>
         <ListBox x:Name="listVerbose" HorizontalAlignment="Left" Height="144" Margin="10,50,0,0" VerticalAlignment="Top" Width="316"/>
-        <Label Content="Verbose" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtComputerName" HorizontalAlignment="Left" Height="23" Margin="10,20,0,0" TextWrapping="Wrap" Text="Computer Name" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>
