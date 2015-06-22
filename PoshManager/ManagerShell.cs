@@ -15,13 +15,13 @@ namespace PoshManager
 {
     public class ManagerShell : IDisposable
     {
-        RunspacePool Runspace;
+        RunspacePool RunspacePool;
 
         public ManagerShell()
         {
-            this.Runspace = RunspaceFactory.CreateRunspacePool(
+            this.RunspacePool = RunspaceFactory.CreateRunspacePool(
                 GetInitialSessionState());
-            this.Runspace.Open();
+            this.RunspacePool.Open();
         }
 
         private bool isDisposed = false;
@@ -38,11 +38,11 @@ namespace PoshManager
 
             if (disposing)
             {
-                if (null != this.Runspace)
+                if (null != this.RunspacePool)
                 {
-                    this.Runspace.Close();
-                    this.Runspace.Dispose();
-                    this.Runspace = null;
+                    this.RunspacePool.Close();
+                    this.RunspacePool.Dispose();
+                    this.RunspacePool = null;
                 }
             }
 
@@ -56,8 +56,8 @@ namespace PoshManager
 
         public PowerShell GetPowerShell()
         {
-            var ret = PowerShell.Create();
-            ret.RunspacePool = this.Runspace;
+            var ret = PowerShell.Create(RunspaceMode.NewRunspace);
+            ret.RunspacePool = this.RunspacePool;
             return ret;
         }
 
@@ -146,7 +146,7 @@ namespace PoshManager
             foreach (var p in source.Providers)
             {
                 if (null == providers || providers.Contains(p.Name))
-                    clean.Providers.Add(p);
+                    clean.Providers.Add((SessionStateProviderEntry)p.Clone());
             }
         }
 
