@@ -9,18 +9,24 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using Microsoft.PowerShell.Commands;
 using Microsoft.PowerShell.Commands.Management;
-using PowerShell = System.Management.Automation.PowerShell;
+using System.Management.Automation;
+using System.Management.Automation.Host;
 
 namespace PoshManager
 {
     public class ManagerShell : IDisposable
     {
         RunspacePool RunspacePool;
-
         public ManagerShell()
         {
-            this.RunspacePool = RunspaceFactory.CreateRunspacePool(
-                GetInitialSessionState());
+            var iss = GetInitialSessionState();
+            this.RunspacePool = RunspaceFactory.CreateRunspacePool(iss);
+            this.RunspacePool.SetMinRunspaces(10);
+            this.RunspacePool.SetMaxRunspaces(20);
+
+            // this may not be necessary
+            this.RunspacePool.ThreadOptions = PSThreadOptions.UseNewThread;
+            this.RunspacePool.ApartmentState = System.Threading.ApartmentState.MTA;
             this.RunspacePool.Open();
         }
 
@@ -68,9 +74,7 @@ namespace PoshManager
 
             // this isn't restrictive.
             // this isn't restrictive at all!
-            cleanIss.LanguageMode = PSLanguageMode.FullLanguage;
-
-            
+            cleanIss.LanguageMode = PSLanguageMode.FullLanguage;            
 
             // Disable execution policy
             cleanIss.AuthorizationManager = new AuthorizationManager("dummy"); 
@@ -166,8 +170,7 @@ namespace PoshManager
                 if (0 < check_cmd.Count())
                 {
                     var msg = String.Format("Command already in session state: {0}", cmd);
-                    // TODO: Better error handling
-                    Console.WriteLine(msg);
+                    throw (new ArgumentException(msg));
                 }
 
                 var scmds = source.Commands.Where(c => c.Name == cmd);
