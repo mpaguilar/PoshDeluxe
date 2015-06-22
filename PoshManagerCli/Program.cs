@@ -22,10 +22,19 @@ namespace PoshManagerCli
     {
         static void Main(string[] args)
         {
+            var computerName = "localhost";
+
+            if (args.Length == 1)
+            {
+                computerName = args[0];
+            }
+
+            RunShell(computerName);            
+        }
+
+        static void RunShell(String computerName)
+        {
             var cw = new ConsoleWriter();
-            var computerName = "grunt";
-
-
             using (ManagerShell mgr = new ManagerShell())
             {
 
