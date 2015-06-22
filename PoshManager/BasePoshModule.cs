@@ -31,6 +31,10 @@ namespace PoshManager
             ComputerName = computerName;
             ScriptPath = scriptPath;
 
+            Shell
+                .AddCommand(ScriptPath)
+                .AddParameter("ComputerName", ComputerName);
+
             var env = Environment.CurrentDirectory;            
         }
 
@@ -105,6 +109,7 @@ namespace PoshManager
             bool hasCounted = false;
             while (!poshWait.IsCompleted)
             {
+                System.Threading.Thread.Sleep(1);
                 // I'm not sure why I'm having to do this,
                 // but I only have to do it once
                 if (!hasCounted && (
@@ -131,6 +136,7 @@ namespace PoshManager
                     // TODO: this will spew dupes if ErrorPreference is not Stop
                     WriteMessages(ErrorMessages, stream.ErrorWriter);
                 }
+                
             }
             
             var ret = Shell.EndInvoke(poshWait);

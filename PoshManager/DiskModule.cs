@@ -60,9 +60,9 @@ namespace PoshManager
         {
             return Task.Run(() =>
             {
-                Shell.AddStatement()
-                    .AddCommand(_scriptPath)
-                    .AddParameter("ComputerName", ComputerName);
+            //    Shell.AddStatement()
+            //        .AddCommand(_scriptPath)
+            //        .AddParameter("ComputerName", ComputerName);
 
                 var psoCollection = Invoke(stream);
 

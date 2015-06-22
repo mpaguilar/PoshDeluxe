@@ -41,7 +41,6 @@ namespace PoshManager
             }
         }
 
-
         private IEnumerable<NetworkAdapter> _nics = null;
         public IEnumerable<NetworkAdapter> NetworkAdapters
         {
@@ -54,7 +53,7 @@ namespace PoshManager
             String scriptPath = "scripts\\GetNicInfo.ps1")
             : base(powerShell, computerName, scriptPath)
         {
- 
+            
         }
 
         ~NetModule()
@@ -68,10 +67,6 @@ namespace PoshManager
             Task t =
             Task.Run(() =>
             {
-                Shell.AddStatement()
-                    .AddCommand(ScriptPath)
-                    .AddParameter("ComputerName", ComputerName);
-
                 var psoCollection = Invoke(stream);
 
                 _nics = psoCollection.Select(
