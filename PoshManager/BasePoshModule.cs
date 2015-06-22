@@ -31,10 +31,7 @@ namespace PoshManager
             ComputerName = computerName;
             ScriptPath = scriptPath;
 
-            var env = Environment.CurrentDirectory;
-
-
-            
+            var env = Environment.CurrentDirectory;            
         }
 
         public BasePoshModule(
@@ -62,7 +59,7 @@ namespace PoshManager
 
         public IEnumerable<String> ErrorMessages
         {
-            get { return Shell.Streams.Error.Select(msg => msg.ErrorDetails.Message); }
+            get { return Shell.Streams.Error.Select(msg => msg.Exception.Message); }
         }
         public IEnumerable<String> DebugMessages
         {
