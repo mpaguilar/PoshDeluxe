@@ -24,9 +24,6 @@ namespace PoshManager
             this.RunspacePool.SetMinRunspaces(10);
             this.RunspacePool.SetMaxRunspaces(20);
 
-            // this may not be necessary
-            this.RunspacePool.ThreadOptions = PSThreadOptions.UseNewThread;
-            this.RunspacePool.ApartmentState = System.Threading.ApartmentState.MTA;
             this.RunspacePool.Open();
         }
 
