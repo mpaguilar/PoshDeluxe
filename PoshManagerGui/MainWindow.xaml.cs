@@ -24,11 +24,9 @@ namespace PoshManagerGui
     /// </summary>
     public partial class MainWindow : Window
     {
-        private PmGuiWriter _writer;
         public MainWindow()
         {
             InitializeComponent();
-            _writer = new PmGuiWriter();
         }
 
         public class PmGuiWriter : IPoshStream
@@ -111,7 +109,7 @@ namespace PoshManagerGui
         {
             listMessages.ItemsSource = null;
             var writer = new PmGuiWriter();
-            _writer.Messages.Clear();
+
 
             var computerName = txtComputerName.Text;
             using (ManagerShell mgr = new ManagerShell())
@@ -126,15 +124,13 @@ namespace PoshManagerGui
                     computerName
                     );
                 
-                var netWait = netModule.Refresh(_writer);
-                var diskWait = diskModule.Refresh(_writer);
+                var netWait = netModule.Refresh(writer);
+                var diskWait = diskModule.Refresh(writer);
 
                 Task.WaitAll(new[] { netWait, diskWait });
-
             }
 
-            listMessages.ItemsSource = _writer.Messages;
-           
+            listMessages.ItemsSource = writer.Messages;           
         }
     }
 }
