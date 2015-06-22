@@ -31,41 +31,84 @@ namespace PoshManagerGui
 
         public class PmGuiWriter : IPoshStream
         {
+            public class PoshMessage
+            {
+                public Brush MessageColor {get; set;}
+                public String Message {get;set;}
+            }
+            public enum MessageType
+            {
+                Verbose,
+                Debug,
+                Warning,
+                Error
+            }
+
             public Action<String> VerboseWriter { get {
-                return Writer; } 
+                return Writer(MessageType.Verbose); } 
             }
             public Action<String> DebugWriter
             {
                 get
                 {
-                    return Writer;
+                    return Writer(MessageType.Debug);
                 }
             }
             public Action<String> WarningWriter
             {
                 get
                 {
-                    return Writer;
+                    return Writer(MessageType.Warning);
                 }
             }
             public Action<String> ErrorWriter
             {
                 get
                 {
-                    return Writer;
+                    return Writer(MessageType.Error);
                 }
             }
 
             public List<String> VerboseMessages = new List<String>();
+            public List<PoshMessage> Messages = new List<PoshMessage>();
 
-            private void Writer(String msg)
+            private Action<String> Writer(MessageType messageType )
             {
-                VerboseMessages.Add(msg);
+                var color = Brushes.Aqua;
+                SolidColorBrush brush = null;
+                switch (messageType)
+                {
+                    case MessageType.Verbose:
+                        brush = Brushes.Gray;
+                        break;
+
+                    case MessageType.Debug:
+                        brush = Brushes.Blue;
+                        break;
+
+                    case MessageType.Error:
+                        brush = Brushes.Red;
+                        break;
+
+                    case MessageType.Warning:
+                        brush = Brushes.YellowGreen;
+                        break;
+
+                    default:
+                        brush = Brushes.Black;
+                        break;
+                }
+                return (msg) =>
+                {
+                    Messages.Add(new PoshMessage { MessageColor = brush, Message = msg });
+                };
             }
         }
         
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
+            listMessages.ItemsSource = null;
+
             var computerName = txtComputerName.Text;
             using (ManagerShell mgr = new ManagerShell())
             {
@@ -83,8 +126,7 @@ namespace PoshManagerGui
                 var netWait = netModule.Refresh(writer);
                 Task.WaitAll(new[] { netWait });
 
-                writer.VerboseMessages
-                    .ForEach(m => listVerbose.Items.Add(m));                
+                listMessages.ItemsSource = writer.Messages;
             }
         }
     }
