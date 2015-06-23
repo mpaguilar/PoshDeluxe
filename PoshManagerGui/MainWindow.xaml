@@ -9,7 +9,8 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <WrapPanel>
-                        <TextBlock Text="{Binding}"/>
+                        <TextBlock Text="{Binding NetEnabled}"/>
+                        <TextBlock Text="{Binding Description}"/>
                     </WrapPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

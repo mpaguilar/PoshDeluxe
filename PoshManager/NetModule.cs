@@ -16,24 +16,29 @@ namespace PoshManager
     {
         public class NetworkAdapter
         {
-            public Int32 Id = -1;
-            public String MACAddress = String.Empty;
-            public Int32 MaxSpeed = -1;
-            public bool NetEnabled = false;
-            public String Description = String.Empty;
+            public Int32 Id { get; set; }
+            public String MACAddress {get;set;}
+            public Int32 MaxSpeed {get;set;}
+            public bool NetEnabled {get;set;}
+            public String Description {get;set;}
             public List<IPAddress> IPAddresses = new List<IPAddress>();
 
             public override string ToString()
             {
                 return String.Format("{0}: {1}", Id, Description);
             }
+
+            public NetworkAdapter()
+            {
+
+            }
         }
 
         public class IPAddress
         {
             // using strings is lazy...so I'm lazy
-            public String Address = String.Empty;
-            public String SubnetMask = String.Empty;
+            public String Address {get; set;}
+            public String SubnetMask {get;set;}
 
             public override String ToString()
             {
