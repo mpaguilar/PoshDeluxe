@@ -15,17 +15,19 @@ namespace PoshManager
         public const String _scriptPath = "scripts\\GetDiskInfo.ps1";
         public class DiskDrive
         {
-            public String DeviceID = String.Empty;
-            public String FileSystem = String.Empty;
-            public UInt64 Size = 0;
-            public UInt64 FreeSpace = 0;
-            public UInt32 MediaType = 0;
-            public String Caption = String.Empty;
-            public String Name = String.Empty;
+            // WPF requires getters and setters
+
+            public String DeviceID  {get; set;}
+            public String FileSystem { get; set; }
+            public UInt64 Size { get; set; }
+            public UInt64 FreeSpace { get; set; }
+            public UInt32 MediaType { get; set; }
+            public String Caption { get; set; }
+            public String Name { get; set; }
 
             public override string ToString()
             {
-                return String.Format("{0} {1} bytes available", DeviceID, FreeSpace);
+                return String.Format("{0} {1} Gb available", DeviceID, (FreeSpace/(1024 * 1024 * 1024)));
             }
         }
 

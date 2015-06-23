@@ -7,7 +7,6 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <WrapPanel>
-                        <TextBlock Text="Message: "/>
                         <TextBlock Text="{Binding Message}" Foreground="{Binding MessageColor}">
                         </TextBlock>
                     </WrapPanel>
