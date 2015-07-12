@@ -52,23 +52,7 @@ namespace PoshManager
         {
             Shell.Streams.ClearStreams();
         }
-        public IEnumerable<String> VerboseMessages
-        {
-            get { return Shell.Streams.Verbose.Select(msg => msg.Message); }
-        }
-        public IEnumerable<String> WarningMessages
-        {
-            get { return Shell.Streams.Warning.Select(msg => msg.Message); }
-        }
 
-        public IEnumerable<String> ErrorMessages
-        {
-            get { return Shell.Streams.Error.Select(msg => msg.Exception.Message); }
-        }
-        public IEnumerable<String> DebugMessages
-        {
-            get { return Shell.Streams.Debug.Select(msg => msg.Message); }
-        }
 
         // even more stuff can be pulled from global variables
         public IEnumerable<String> GetPoshVariable(String variableName)
@@ -88,16 +72,60 @@ namespace PoshManager
 
             return new String[0];
         }
-        public void WriteMessages(IEnumerable<String> messages, Action<String> writer)
+
+        public IEnumerable<String> VerboseMessages
+        {
+            get { return Shell.Streams.Verbose.Select(msg => msg.Message); }
+        }
+        public IEnumerable<String> WarningMessages
+        {
+            get { return Shell.Streams.Warning.Select(msg => msg.Message); }
+        }
+
+        public IEnumerable<String> ErrorMessages
+        {
+            get { return Shell.Streams.Error.Select(msg => msg.Exception.Message); }
+        }
+        public IEnumerable<String> DebugMessages
+        {
+            get { return Shell.Streams.Debug.Select(msg => msg.Message); }
+        }
+
+        public void WritePoshMessages(IPoshStream stream, 
+            IEnumerable<String> messages, 
+            PoshMessage.MessageType messageType)
         {
             // TODO: fix this
             // the problem with this approach is that the messages
             // will not be properly interleaved
-
             foreach (var msg in messages)
             {
-                writer(msg);
+                stream.Write(
+                    new PoshMessage { Message = msg, Type = messageType }
+                    );
             }
+        }
+
+        public void WriteStreams(IPoshStream stream)
+        {
+            WritePoshMessages(stream,
+                VerboseMessages, PoshMessage.MessageType.Verbose);
+
+            Shell.Streams.Verbose.Clear();
+
+            WritePoshMessages(stream,
+                WarningMessages, PoshMessage.MessageType.Warning);
+            Shell.Streams.Warning.Clear();
+
+            WritePoshMessages(stream,
+                DebugMessages, PoshMessage.MessageType.Debug);
+            Shell.Streams.Debug.Clear();
+
+
+            // the default ErrorPreference is to Stop
+            // TODO: this will spew dupes if ErrorPreference is not Stop
+            WritePoshMessages(stream,
+                ErrorMessages, PoshMessage.MessageType.Error);
         }
 
         // this does most of the work
@@ -111,7 +139,8 @@ namespace PoshManager
             {
                 System.Threading.Thread.Sleep(1);
                 // I'm not sure why I'm having to do this,
-                // but I only have to do it once
+                // but if I don't get a count the first time
+                // data is available, I don't ever get anything. Hmph!
                 if (!hasCounted && (
                     Shell.Streams.Verbose.Count > 0 ||
                     Shell.Streams.Debug.Count > 0 ||
@@ -123,18 +152,7 @@ namespace PoshManager
 
                 if (hasCounted)
                 {
-                    WriteMessages(VerboseMessages, stream.VerboseWriter);
-                    Shell.Streams.Verbose.Clear();
-
-                    WriteMessages(WarningMessages, stream.WarningWriter);
-                    Shell.Streams.Warning.Clear();
-
-                    WriteMessages(DebugMessages, stream.DebugWriter);
-                    Shell.Streams.Debug.Clear();
-
-                    // the default is to Stop
-                    // TODO: this will spew dupes if ErrorPreference is not Stop
-                    WriteMessages(ErrorMessages, stream.ErrorWriter);
+                    WriteStreams(stream);
                 }
                 
             }
@@ -142,14 +160,12 @@ namespace PoshManager
             var ret = Shell.EndInvoke(poshWait);
 
             // any left?
-            WriteMessages(VerboseMessages, stream.VerboseWriter);
-            WriteMessages(WarningMessages, stream.WarningWriter);
-            WriteMessages(DebugMessages, stream.DebugWriter);
-            WriteMessages(ErrorMessages, stream.ErrorWriter);
+            WriteStreams(stream);
 
             return ret;
         }
 
+        #region IDispose members
         private bool isDisposed = false;
         public void Dispose()
         {
@@ -173,5 +189,6 @@ namespace PoshManager
         {
             Dispose(false);
         }
+        #endregion
     }
 }

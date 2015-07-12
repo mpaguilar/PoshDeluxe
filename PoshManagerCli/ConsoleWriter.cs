@@ -32,6 +32,8 @@ namespace PoshManagerCli
             ErrorWriter = Writer(MessageType.Error);
         }
 
+        public void Write(PoshManager.PoshMessage message) { }
+
         public Action<String> Formatter(
             String formatString = "{0}: {1}"
             )

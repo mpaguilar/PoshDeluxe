@@ -74,7 +74,15 @@ namespace PoshManager
             cleanIss.LanguageMode = PSLanguageMode.FullLanguage;            
 
             // Disable execution policy
-            cleanIss.AuthorizationManager = new AuthorizationManager("dummy"); 
+            cleanIss.AuthorizationManager = new AuthorizationManager("dummy");
+
+            cleanIss.ImportPSModule(new string[] {"ActiveDirectory"});
+            /*
+             ModuleBase
+            ----------
+            C:\windows\system32\windowspowershell\v1.0\Modules\ActiveDirectory
+
+             */
 
             // TODO: create the objects, rather than copying
             // is there something wrong with copying?
@@ -93,7 +101,8 @@ namespace PoshManager
                 "New-Object",
                 "Where-Object",
                 "Get-Item",
-                "Select-Object"
+                "Select-Object",
+                "Test-Connection"
             });
 
             // Some output defaults.

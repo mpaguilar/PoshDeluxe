@@ -105,6 +105,8 @@ namespace PoshManagerGui
                     Messages.Add(new PoshMessage { MessageColor = brush, Message = msg });
                 };
             }
+
+            public void Write(PoshManager.PoshMessage message) { }
         }
         
         private void btnRefresh_Click(object sender, RoutedEventArgs e)

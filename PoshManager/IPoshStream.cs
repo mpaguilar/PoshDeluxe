@@ -8,9 +8,6 @@ namespace PoshManager
 {
     public interface IPoshStream
     {
-        Action<String> VerboseWriter { get;  }
-        Action<String> DebugWriter { get;  }
-        Action<String> WarningWriter { get; }
-        Action<String> ErrorWriter { get; }
+        void Write(PoshMessage message);
     }
 }
