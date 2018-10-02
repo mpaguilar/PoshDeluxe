@@ -1,3 +1,7 @@
+## This project is obsolete!
+
+I wrote this for PowerShell 3.0. Later versions have built-in facilities for doing this, better. Keeping it up here for those poor folks that are stuck on old versions.
+
 ## PoshDeluxe
 
 A general framework for running PowerShell scripts.
